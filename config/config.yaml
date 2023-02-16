@@ -1,0 +1,12 @@
+mysql:
+  # 数据库登录用户
+  username: miomio
+  # 数据库密码
+  password: 123321
+  host: 127.0.0.1
+  port: 3333
+  # 数据库名字
+  dbname: user-center
+  timeout: 10s
+gin:
+  port: 90

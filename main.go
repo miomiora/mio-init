@@ -1,8 +1,13 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"user-center/config"
+	"user-center/routes"
+)
 
 func main() {
-	r := gin.Default()
-	r.Run("90")
+	err := routes.R.Run(":" + config.Config.Gin.Port)
+	if err != nil {
+		return
+	}
 }
