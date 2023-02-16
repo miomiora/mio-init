@@ -1,18 +1,53 @@
 package controllers
 
 import (
+	"fmt"
+	"github.com/gomodule/redigo/redis"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"user-center/config"
 	"user-center/models"
 )
 
-type Response struct {
-	Message   string      `json:"message"`
-	Data      interface{} `json:"data"`
-	IsSuccess bool        `json:"is_success"`
+var DB *gorm.DB
+var Conn redis.Conn
+
+// 连接数据库
+func init() {
+	connectMysql()
+	connectRedis()
 }
 
-var db *gorm.DB
+func connectMysql() {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=%s",
+		config.Config.Mysql.Username,
+		config.Config.Mysql.Password,
+		config.Config.Mysql.Host,
+		config.Config.Mysql.Port,
+		config.Config.Mysql.Dbname,
+		config.Config.Mysql.Timeout)
+	//连接MYSQL, 获得DB类型实例，用于后面的数据库读写操作。
+	conn, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		SkipDefaultTransaction: true,
+	})
+	if err != nil {
+		fmt.Println("连接Mysql数据库失败, error=" + err.Error())
+		return
+	}
+	// 连接成功
+	fmt.Println("Mysql数据库连接成功！！！")
+	DB = conn
+	err = DB.AutoMigrate(&models.User{})
+	if err != nil {
+		fmt.Println("创建表失败！")
+	}
+}
 
-func init() {
-	db = models.DB
+func connectRedis() {
+	c, err := redis.Dial("tcp", "127.0.0.1:6379")
+	if err != nil {
+		fmt.Println("连接Redis数据库失败！" + err.Error())
+	}
+	fmt.Println("Redis数据库连接成功！！！")
+	Conn = c
 }

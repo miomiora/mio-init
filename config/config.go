@@ -35,5 +35,5 @@ func init() {
 	if err != nil {
 		fmt.Println("配置文件解析失败 " + err.Error())
 	}
-	fmt.Println("配置文件初始化成功！")
+	fmt.Println("配置文件读取成功！")
 }
