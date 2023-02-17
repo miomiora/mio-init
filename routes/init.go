@@ -13,6 +13,5 @@ func init() {
 	r.Use(middleware.RefreshRedis)
 	addIndexRouter(r)
 	addUserRouter(r)
-
 	R = r
 }
