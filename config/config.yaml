@@ -3,10 +3,13 @@ mysql:
   username: miomio
   # 数据库密码
   password: 123321
-  host: 127.0.0.1
-  port: 3333
+  address: 127.0.0.1:3333
   # 数据库名字
   dbname: user-center
   timeout: 10s
+
 gin:
-  port: 90
+  address: 127.0.0.1:90
+
+redis:
+  address: 127.0.0.1:6379

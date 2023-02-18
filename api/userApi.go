@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/gomodule/redigo/redis"
 	"github.com/google/uuid"
 	"net/http"
 	"regexp"
@@ -21,8 +20,9 @@ func UserLogin(c *gin.Context) {
 	// 获取用户登录信息, 同时校验是否为空, 以及长度是否合法
 	err := c.ShouldBindJSON(&user)
 	if err != nil {
+		fmt.Println("[api UserLogin err] c.ShouldBindJSON : ", err.Error())
 		c.JSON(http.StatusForbidden, gin.H{
-			"message": "获取用户登录信息失败！" + err.Error(),
+			"message": "获取用户登录信息失败！",
 		})
 		return
 	}
@@ -34,7 +34,8 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 	if err != nil {
-		c.JSON(http.StatusForbidden, gin.H{"message": "校验账号失败！" + err.Error()})
+		fmt.Println("[api UserLogin err] regexp.MatchString : ", err.Error())
+		c.JSON(http.StatusForbidden, gin.H{"message": "校验账号失败！"})
 		return
 	}
 
@@ -63,18 +64,18 @@ func UserLogin(c *gin.Context) {
 		"client_ip", c.ClientIP())
 
 	if err != nil {
+		fmt.Println("[api UserLogin err] Conn.Do HSET : " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "存储Token失败！" + err.Error(),
-			"data":    nil,
+			"message": "存储Token失败！",
 		})
 		return
 	}
 	// 设置有效期
 	_, err = Conn.Do("EXPIRE", tokenKey, utils.TOKEN_TIMEOUT)
 	if err != nil {
+		fmt.Println("[api UserLogin err] Conn.Do EXPIRE : " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "设置Token有效期失败！" + err.Error(),
-			"data":    nil,
+			"message": "设置Token有效期失败！",
 		})
 		return
 	}
@@ -90,7 +91,8 @@ func UserRegister(c *gin.Context) {
 	// 获取用户注册信息, 同时校验是否为空, 以及长度是否合法
 	err := c.ShouldBindJSON(&userRegister)
 	if err != nil {
-		c.JSON(http.StatusForbidden, gin.H{"message": "获取用户注册信息失败！" + err.Error()})
+		fmt.Println("[api UserRegister err] c.ShouldBindJSON : ", err.Error())
+		c.JSON(http.StatusForbidden, gin.H{"message": "获取用户注册信息失败！"})
 		return
 	}
 
@@ -101,7 +103,8 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 	if err != nil {
-		c.JSON(http.StatusForbidden, gin.H{"message": "校验账号失败！" + err.Error()})
+		fmt.Println("[api UserRegister err] regexp.MatchString : ", err.Error())
+		c.JSON(http.StatusForbidden, gin.H{"message": "校验账号失败！"})
 		return
 	}
 	// 密码(以字母开头，只能包含字母、数字和下划线)：^[a-zA-Z]\w*$    \w = [a-zA-Z0-9_]
@@ -165,17 +168,12 @@ func GetUserList(c *gin.Context) {
 
 func DeleteUserById(c *gin.Context) {
 	id := c.Param("id")
-	// 判断是否删除的用户是自己
-	token := c.GetHeader("Authorization")
-	tokenKey := utils.TOKEN_PREIX + token
 	// 获取发起请求的用户id
-	userId, err := redis.String(Conn.Do("HGET", tokenKey, "id"))
-	if err != nil {
-		fmt.Println("DeleteUserById redis.String(Conn.Do(\"HMGET\", tokenKey, \"id\")) err!!!" + err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "验证删除用户权限失败！"})
-		return
+	userId, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "获取用户id失败！"})
 	}
-	// 如果删除的id和发起请求人的id一致则不能删除
+	// 判断是否删除的用户是自己 如果删除的id和发起请求人的id一致则不能删除
 	if userId == id {
 		c.JSON(http.StatusForbidden, gin.H{"message": "不能删除自己！"})
 		return

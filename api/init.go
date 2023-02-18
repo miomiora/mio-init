@@ -19,11 +19,10 @@ func init() {
 }
 
 func connectMysql() {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=%s",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=%s",
 		config.Config.Mysql.Username,
 		config.Config.Mysql.Password,
-		config.Config.Mysql.Host,
-		config.Config.Mysql.Port,
+		config.Config.Mysql.Address,
 		config.Config.Mysql.Dbname,
 		config.Config.Mysql.Timeout)
 	//连接MYSQL, 获得DB类型实例，用于后面的数据库读写操作。
@@ -35,7 +34,7 @@ func connectMysql() {
 		return
 	}
 	// 连接成功
-	fmt.Println("Mysql数据库连接成功！！！")
+	fmt.Println("[Success] Mysql数据库连接成功！！！")
 	DB = conn
 	err = DB.AutoMigrate(&models.User{})
 	if err != nil {
@@ -44,10 +43,10 @@ func connectMysql() {
 }
 
 func connectRedis() {
-	c, err := redis.Dial("tcp", "127.0.0.1:6379")
+	c, err := redis.Dial("tcp", config.Config.Redis.Address)
 	if err != nil {
 		fmt.Println("连接Redis数据库失败！" + err.Error())
 	}
-	fmt.Println("Redis数据库连接成功！！！")
+	fmt.Println("[Success] Redis数据库连接成功！！！")
 	Conn = c
 }

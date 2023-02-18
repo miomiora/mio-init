@@ -9,18 +9,22 @@ import (
 type Conf struct {
 	Mysql Mysql `yaml:"mysql"`
 	Gin   Gin   `yaml:"gin"`
+	Redis Redis `yaml:"redis"`
 }
 type Mysql struct {
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
-	Host     string `yaml:"host"`
-	Port     string `yaml:"port"`
+	Address  string `yaml:"address"`
 	Dbname   string `yaml:"dbname"`
 	Timeout  string `yaml:"timeout"`
 }
 
 type Gin struct {
-	Port string `yaml:"port"`
+	Address string `yaml:"address"`
+}
+
+type Redis struct {
+	Address string `yaml:"address"`
 }
 
 var Config Conf
@@ -35,5 +39,5 @@ func init() {
 	if err != nil {
 		fmt.Println("配置文件解析失败 " + err.Error())
 	}
-	fmt.Println("配置文件读取成功！")
+	fmt.Println("[Success] 配置文件读取成功！！！")
 }

@@ -13,11 +13,12 @@ import (
 //  @param c
 //
 func AuthAdmin(c *gin.Context) {
-	role, err := utils.ValidToken(c, api.Conn, api.DB)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"message": "请登录" + err.Error(),
-			"data":    nil,
+	utils.ValidToken(c, api.Conn, api.DB)
+	role, exists := c.Get("userRole")
+	// 不存在则意味着未存入任何内容到userRole中，服务器错误
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "获取用户权限错误!",
 		})
 		c.Abort()
 	}
@@ -25,14 +26,13 @@ func AuthAdmin(c *gin.Context) {
 	// token验证失败
 	case utils.ROLE_UNDEFINED:
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"message": "请登录",
-			"data":    nil,
+			"message": "请登录!",
 		})
 		c.Abort()
 	// 普通用户
 	case utils.ROLE_USER:
-		c.JSON(http.StatusForbidden, gin.H{
-			"message": "权限不足！需要管理员权限！",
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "用户权限不足!",
 		})
 		c.Abort()
 	// 管理员
