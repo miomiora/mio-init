@@ -12,7 +12,7 @@ import (
 
 //
 // UserLogin
-//  @Description: 用户登录
+//  @Description: 用户登录, 需要接受json内容:user_account、user_password
 //  @param c
 //
 func UserLogin(c *gin.Context) {
@@ -72,7 +72,7 @@ func UserLogin(c *gin.Context) {
 
 //
 // UserRegister
-//  @Description: 用户注册
+//  @Description: 用户注册, 需要接受json内容:user_account、user_password、check_password
 //  @param c
 //
 func UserRegister(c *gin.Context) {
@@ -115,7 +115,7 @@ func UserRegister(c *gin.Context) {
 
 //
 // GetUserById
-//  @Description: 获取指定id的用户
+//  @Description: 获取指定id的用户, 需要接受请求参数:id
 //  @param c
 //
 func GetUserById(c *gin.Context) {
@@ -136,23 +136,50 @@ func GetUserById(c *gin.Context) {
 
 //
 // GetUserList
-//  @Description: 获取全部用户，未做分页
+//  @Description: 获取全部用户，需要接收请求参数: num一页的数量，page当前的页数
 //  @param c
 //
 func GetUserList(c *gin.Context) {
+	// 获取num和page的参数，并验证
+	numParam := c.Param("num")
+	matched := utils.MatchString(`^[0-9]*$`, numParam)
+	if !matched {
+		c.JSON(http.StatusForbidden, utils.ResponseError(utils.ParamsError, "num必须为数字！"))
+		return
+	}
+	pageParam := c.Param("page")
+	matched = utils.MatchString(`^[0-9]*$`, pageParam)
+	if !matched {
+		c.JSON(http.StatusForbidden, utils.ResponseError(utils.ParamsError, "page必须为数字！"))
+		return
+	}
+
+	// 将num和page转化为整数
+	num, err := strconv.Atoi(numParam)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utils.ResponseError(utils.ServerError, "转化为数字失败！"))
+		return
+	}
+	page, err := strconv.Atoi(pageParam)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utils.ResponseError(utils.ServerError, "转化为数字失败！"))
+		return
+	}
+
 	var userList []models.UserDTO
-	// todo 分页查询
-	affected := DB.Model(&models.User{}).Scan(&userList).RowsAffected
+	offset := (page - 1) * num
+	affected := DB.Limit(num).Offset(offset).Model(&models.User{}).Scan(&userList).RowsAffected
+	fmt.Println(affected)
 	if affected == 0 {
 		c.JSON(http.StatusInternalServerError, utils.ResponseError(utils.MysqlError, "数据库中没有用户！"))
 		return
 	}
-	c.JSON(http.StatusOK, utils.ResponseOK(userList))
+	c.JSON(http.StatusOK, utils.ResponseOK(userList, fmt.Sprintf("查找到了%v个用户！", affected)))
 }
 
 //
 // DeleteUserById
-//  @Description: 删除指定用户
+//  @Description: 删除指定用户，需要接受请求参数: id
 //  @param c
 //
 func DeleteUserById(c *gin.Context) {
@@ -183,7 +210,7 @@ func DeleteUserById(c *gin.Context) {
 
 //
 // GetCurrentUser
-//  @Description: 获取当前用户
+//  @Description: 获取当前用户,无需前端传参数,将从token中取得当前的用户
 //  @param c
 //
 func GetCurrentUser(c *gin.Context) {
@@ -204,7 +231,7 @@ func GetCurrentUser(c *gin.Context) {
 
 //
 // UserLogout
-//  @Description: 用户登出
+//  @Description: 用户登出,无需前端传参数,将从token中取得当前的用户
 //  @param c
 //
 func UserLogout(c *gin.Context) {
@@ -221,7 +248,8 @@ func UserLogout(c *gin.Context) {
 
 //
 // UpdateUserBySelf
-//  @Description: 用户修改自己的信息
+//  @Description: 用户修改自己的信息,需验证token,
+// 				  并且需要JSON参数: 	id(必须),user_account(必须),user_name,gender,phone,email,avatar_url
 //  @param c
 //
 func UpdateUserBySelf(c *gin.Context) {
@@ -244,7 +272,7 @@ func UpdateUserBySelf(c *gin.Context) {
 	}
 
 	// 判断是否是要修改的用户本人发起的请求
-	if userId.(string) != strconv.Itoa(int(user.ID)) {
+	if userId != strconv.Itoa(int(user.ID)) {
 		c.JSON(http.StatusForbidden, utils.ResponseError(utils.ParamsError, "身份验证失败！"))
 		return
 	}
@@ -268,7 +296,8 @@ func UpdateUserBySelf(c *gin.Context) {
 
 //
 // UpdateUserById
-//  @Description: 管理员修改指定id的用户
+//  @Description: 管理员修改指定id的用户, 需要请求参数: id
+// 				 并且需要JSON参数: id(必须),user_account(必须),user_name,gender,phone,email,avatar_url
 //  @param c
 //
 func UpdateUserById(c *gin.Context) {
@@ -286,8 +315,7 @@ func UpdateUserById(c *gin.Context) {
 
 	// 判断请求参数的id是否和获取到的用户id一致，不一致则直接返回
 	if id != strconv.Itoa(int(user.ID)) {
-		c.JSON(http.StatusForbidden,
-			utils.ResponseError(utils.ParamsError, "需要修改的用户参数和请求不合法！"))
+		c.JSON(http.StatusForbidden, utils.ResponseError(utils.ParamsError, "需要修改的用户参数和请求不合法！"))
 		return
 	}
 
@@ -317,10 +345,63 @@ func UpdateUserById(c *gin.Context) {
 	c.JSON(http.StatusOK, utils.ResponseOK(nil, "修改用户信息成功！"))
 }
 
+//
+// ChangePasswordBySelf
+//  @Description: 用户自己修改自己的密码,需要JSON参数: id,user_password,check_password (三个参数均必须)
+//  @param c
+//
 func ChangePasswordBySelf(c *gin.Context) {
-	// todo 用户自己修改自己的密码
+	// 获取需要修改的用户id、用户名、和修改后的密码
+	var user models.UserChangePassword
+	isSuccess := bindContextJson(c, &user)
+	if !isSuccess {
+		return
+	}
+
+	// 获取当前发起请求的用户是否和发送过来的json中的id是否一致
+	userId := getContextValue(c, "userId")
+	if userId == nil {
+		return
+	}
+	if userId != strconv.Itoa(int(user.ID)) {
+		c.JSON(http.StatusForbidden, utils.ResponseError(utils.ParamsError, "身份验证失败！"))
+		return
+	}
+	isSuccess = changePassword(c, user)
+	if !isSuccess {
+		return
+	}
+	c.JSON(http.StatusOK, utils.ResponseOK(nil))
 }
 
+//
+// ChangePasswordById
+//  @Description: 管理员更改用户的密码,需要请求参数: id
+//								需要JSON参数: id,user_password,check_password (三个参数均必须)
+//  @param c
+//
 func ChangePasswordById(c *gin.Context) {
-	// todo 管理员修改指定id的密码
+	// 获取请求的id
+	id := matchParamId(c)
+	if id == "" {
+		return
+	}
+	// 获取需要修改的用户id、用户名、和修改后的密码
+	var user models.UserChangePassword
+	isSuccess := bindContextJson(c, &user)
+	if !isSuccess {
+		return
+	}
+
+	// 判断请求的id和发送的用户数据中的id是否一致
+	if id != strconv.Itoa(int(user.ID)) {
+		c.JSON(http.StatusForbidden, utils.ResponseError(utils.ParamsError, "请求的id和发送的id不一致！"))
+		return
+	}
+
+	isSuccess = changePassword(c, user)
+	if !isSuccess {
+		return
+	}
+	c.JSON(http.StatusOK, utils.ResponseOK(nil))
 }

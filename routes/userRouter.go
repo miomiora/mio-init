@@ -30,13 +30,13 @@ func addUserRouter(apiGroup *gin.RouterGroup) {
 
 		/*
 			下列需要管理员权限
-			search		获取全部的用户
-			search/:id	获取单个用户
-			delete/:id	删除指定用户
-			update/:id	更新指定用户
-			change/:id	修改指定用户的密码
+			list/:num/:page		获取全部的用户(分页)
+			search/:id			获取单个用户
+			delete/:id			删除指定用户
+			update/:id			更新指定用户
+			change/:id			修改指定用户的密码
 		*/
-		userRouter.GET("search", middlewares.AuthAdmin, api.GetUserList)
+		userRouter.GET("list/:num/:page", middlewares.AuthAdmin, api.GetUserList)
 		userRouter.GET("search/:id", middlewares.AuthAdmin, api.GetUserById)
 		userRouter.POST("delete/:id", middlewares.AuthAdmin, api.DeleteUserById)
 		userRouter.PUT("update/:id", middlewares.AuthAdmin, api.UpdateUserById)

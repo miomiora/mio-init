@@ -74,8 +74,7 @@ func matchParamId(c *gin.Context) string {
 	id := c.Param("id")
 	matched := utils.MatchString(`^[0-9]*$`, id)
 	if !matched {
-		c.JSON(http.StatusForbidden,
-			utils.ResponseError(utils.ParamsError, "id必须为数字！"))
+		c.JSON(http.StatusForbidden, utils.ResponseError(utils.ParamsError, "id必须为数字！"))
 		return ""
 	}
 	return id
@@ -92,8 +91,7 @@ func bindContextJson(c *gin.Context, data interface{}) bool {
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
 		fmt.Println("[api bindContextJson err] c.ShouldBindJSON : ", err.Error())
-		c.JSON(http.StatusForbidden,
-			utils.ResponseError(utils.ParamsError, "缺少必填参数或不合法！"))
+		c.JSON(http.StatusForbidden, utils.ResponseError(utils.ParamsError, "缺少必填参数或不合法！"))
 		return false
 	}
 	return true
@@ -119,8 +117,26 @@ func updateUserInfo(c *gin.Context, user models.UserDTO) bool {
 		Role:        user.Role,
 	}).RowsAffected
 	if affected == 0 {
-		c.JSON(http.StatusInternalServerError,
-			utils.ResponseError(utils.MysqlError, "Mysql修改用户信息错误！"))
+		c.JSON(http.StatusInternalServerError, utils.ResponseError(utils.MysqlError, "Mysql修改用户信息错误！"))
+		return false
+	}
+	return true
+}
+
+func changePassword(c *gin.Context, user models.UserChangePassword) bool {
+	// 判断密码和确认密码是否一致
+	if user.UserPassword != user.CheckPassword {
+		c.JSON(http.StatusForbidden, utils.ResponseError(utils.ParamsError, "两次密码不一样！"))
+		return false
+	}
+	// 密码加密
+	password := encryptPassword(user.UserPassword)
+	// 修改
+	affected := DB.Take(&models.User{}, user.ID).Updates(models.User{
+		UserPassword: password,
+	}).RowsAffected
+	if affected == 0 {
+		c.JSON(http.StatusInternalServerError, utils.ResponseError(utils.MysqlError, "Mysql修改用户信息错误！"))
 		return false
 	}
 	return true

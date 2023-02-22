@@ -18,7 +18,7 @@ type User struct {
 }
 
 type UserDTO struct {
-	ID          uint    `json:"id"`
+	ID          uint    `json:"id" binding:"required"`
 	UserAccount string  `json:"user_account" binding:"required,min=4"`
 	UserName    *string `json:"user_name"`
 	Gender      uint    `json:"gender"`
@@ -31,6 +31,12 @@ type UserDTO struct {
 
 type UserRegister struct {
 	UserAccount   string `json:"user_account" binding:"required,min=4"`
+	UserPassword  string `json:"user_password" binding:"required,min=8"`
+	CheckPassword string `json:"check_password" binding:"required,eqfield=UserPassword"`
+}
+
+type UserChangePassword struct {
+	ID            uint   `json:"id" binding:"required"`
 	UserPassword  string `json:"user_password" binding:"required,min=8"`
 	CheckPassword string `json:"check_password" binding:"required,eqfield=UserPassword"`
 }

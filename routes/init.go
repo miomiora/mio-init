@@ -10,8 +10,8 @@ var R *gin.Engine
 // 初始化gin
 func init() {
 	r := gin.Default()
-	r.Use(middlewares.Cors)
-	r.Use(middlewares.RefreshRedis)
+	// 全局中间件
+	r.Use(middlewares.Cors, middlewares.RefreshRedis)
 	apiGroup := r.Group("api")
 	addUserRouter(apiGroup)
 	R = r
