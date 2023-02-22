@@ -169,7 +169,6 @@ func GetUserList(c *gin.Context) {
 	var userList []models.UserDTO
 	offset := (page - 1) * num
 	affected := DB.Limit(num).Offset(offset).Model(&models.User{}).Scan(&userList).RowsAffected
-	fmt.Println(affected)
 	if affected == 0 {
 		c.JSON(http.StatusInternalServerError, utils.ResponseError(utils.MysqlError, "数据库中没有用户！"))
 		return
