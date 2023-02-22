@@ -21,49 +21,51 @@ func ValidToken(c *gin.Context, conn redis.Conn, db *gorm.DB) {
 	// 从请求头中获取Token, 没有token就直接返回
 	token := c.GetHeader("Authorization")
 	if token == "" {
-		c.Set("userRole", ROLE_UNDEFINED)
+		c.Set("userRole", RoleUndefined)
 		return
 	}
-	tokenKey := TOKEN_PREIX + token
+	tokenKey := TokenPrefix + token
 	// 从redis中进行查询
 	result, err := redis.Strings(conn.Do("HMGET", tokenKey, "client_ip", "id"))
 	// 没查到就会报err
 	if err != nil {
 		fmt.Println("[utils ValidToken err] redis.Strings : ", err.Error())
-		c.Set("userRole", ROLE_UNDEFINED)
+		c.Set("userRole", RoleUndefined)
 		return
 	}
 	// 判断ip是否和当前客户端请求的ip一致
 	if result[0] != c.ClientIP() {
-		c.Set("userRole", ROLE_UNDEFINED)
+		c.Set("userRole", RoleUndefined)
 		return
 	}
 	// 判断是否获取id
 	if result[1] == "" {
-		c.Set("userRole", ROLE_UNDEFINED)
+		c.Set("userRole", RoleUndefined)
 		return
 	}
-	// 获取到了id则根据id进行查询用户的role
-	var role int
-	affected := db.Select("role").
-		Take(&models.User{}, "id = ?", result[1]).Scan(&role).RowsAffected
+	// 获取到了id则根据id进行查询用户的role以及user_account
+	type UserData struct {
+		UserAccount string
+		Role        uint
+	}
+	var userData UserData
+	affected := db.Select("role", "user_account").
+		Take(&models.User{}, "id = ?", result[1]).Scan(&userData).RowsAffected
 	if affected == 0 {
-		c.JSON(500, gin.H{
-			"message": "没查到token中id的用户",
-		})
-		c.Set("userRole", ROLE_UNDEFINED)
+		c.Set("userRole", RoleUndefined)
 		return
 	}
 	// id有效，传入gin.context中
 	c.Set("userId", result[1])
+	c.Set("userAccount", userData.UserAccount)
 	// 判断用户权限
-	if role == ROLE_USER {
-		c.Set("userRole", ROLE_USER)
+	if userData.Role == RoleUser {
+		c.Set("userRole", RoleUser)
 		return
 	}
-	if role == ROLE_ADMIN {
-		c.Set("userRole", ROLE_ADMIN)
+	if userData.Role == RoleAdmin {
+		c.Set("userRole", RoleAdmin)
 		return
 	}
-	c.Set("userRole", ROLE_UNDEFINED)
+	c.Set("userRole", RoleUndefined)
 }

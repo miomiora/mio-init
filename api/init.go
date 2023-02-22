@@ -30,7 +30,7 @@ func connectMysql() {
 		SkipDefaultTransaction: true,
 	})
 	if err != nil {
-		fmt.Println("连接Mysql数据库失败, error=" + err.Error())
+		fmt.Println("[api init error]连接Mysql数据库失败, error=" + err.Error())
 		return
 	}
 	// 连接成功
@@ -46,6 +46,7 @@ func connectRedis() {
 	c, err := redis.Dial("tcp", config.Config.Redis.Address)
 	if err != nil {
 		fmt.Println("连接Redis数据库失败！" + err.Error())
+		return
 	}
 	fmt.Println("[Success] Redis数据库连接成功！！！")
 	Conn = c

@@ -1,6 +1,6 @@
 module user-center
 
-go 1.16
+go 1.17
 
 require (
 	github.com/gin-contrib/sessions v0.0.5 // indirect

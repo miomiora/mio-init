@@ -1,4 +1,4 @@
-package middleware
+package middlewares
 
 import (
 	"github.com/gin-gonic/gin"
@@ -17,23 +17,19 @@ func AuthUser(c *gin.Context) {
 	role, exists := c.Get("userRole")
 	// 不存在则意味着未存入任何内容到userRole中，服务器错误
 	if !exists {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "获取用户权限错误！",
-		})
+		c.JSON(http.StatusInternalServerError, utils.ResponseError(utils.ServerError))
 		c.Abort()
 	}
 	switch role {
 	// token验证失败
-	case utils.ROLE_UNDEFINED:
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"message": "请登录",
-		})
+	case utils.RoleUndefined:
+		c.JSON(http.StatusUnauthorized, utils.ResponseError(utils.NotLogin))
 		c.Abort()
 	// 普通用户
-	case utils.ROLE_USER:
+	case utils.RoleUser:
 		c.Next()
 	// 管理员
-	case utils.ROLE_ADMIN:
+	case utils.RoleAdmin:
 		c.Next()
 	default:
 		c.Abort()
