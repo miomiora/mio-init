@@ -1,0 +1,19 @@
+# 注意注意
+- 这个前端非常烂
+- 登录完必须刷新一次才能正常显示数据
+- 非常简陋，只是为了适配一下后端功能！
+
+# 安装
+- 打开user-center-frontend目录下，输入
+```shell
+yarn install
+```
+或者
+```shell
+npm install
+```
+
+# 运行
+```shell
+npm run dev
+```
