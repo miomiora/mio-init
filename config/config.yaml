@@ -9,7 +9,7 @@ mysql:
   timeout: 10s
 
 gin:
-  address: 127.0.0.1:90
+  address: 127.0.0.1:8080
 
 redis:
   address: 127.0.0.1:6379
