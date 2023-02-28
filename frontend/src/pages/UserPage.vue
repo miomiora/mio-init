@@ -82,7 +82,7 @@ async function getCurrentUser() {
       editUser.value.phone = res.data.phone
       editUser.value.user_name = res.data.user_name
     } else {
-      ElMessage.error(res.message)
+      ElMessage.error(res.description)
     }
   });
 }
@@ -93,7 +93,7 @@ async function submitPass() {
       ElMessage.success('修改成功，请重新登录')
       logout()
     } else {
-      ElMessage.error(res.message)
+      ElMessage.error(res.description)
     }
   })
 }
@@ -113,7 +113,7 @@ async function submit() {
       ElMessage.success('修改成功！')
       router.go(0)
     } else {
-      ElMessage.error(res.message)
+      ElMessage.error(res.description)
     }
   })
 }
@@ -128,7 +128,7 @@ async function logout() {
       ElMessage.success('登出成功')
       router.push('/')
     } else {
-      ElMessage.error(res.message)
+      ElMessage.error(res.description)
     }
   })
 }

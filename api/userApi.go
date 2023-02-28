@@ -39,7 +39,7 @@ func UserLogin(c *gin.Context) {
 			"user_account = ? and user_password = ?", user.UserAccount, password).
 		Scan(&userDTO).RowsAffected
 	if affected == 0 {
-		c.JSON(http.StatusForbidden, utils.ResponseError(utils.ParamsError, "账号不存在！"))
+		c.JSON(http.StatusForbidden, utils.ResponseError(utils.ParamsError, "账号不存在或密码错误！"))
 		return
 	}
 

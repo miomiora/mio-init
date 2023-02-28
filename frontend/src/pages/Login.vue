@@ -39,7 +39,7 @@ async function login() {
       }
       localStorage.setItem('token', res.data.token);
     } else {
-      ElMessage.error(res.message)
+      ElMessage.error(res.description)
     }
   });
 }

@@ -36,7 +36,7 @@ function register() {
       ElMessage.success('注册成功，跳转到登录页')
       router.push('/')
     } else {
-      ElMessage.error(res.message)
+      ElMessage.error(res.description)
     }
   });
 }

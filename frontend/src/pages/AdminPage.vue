@@ -142,7 +142,7 @@ async function getUserList() {
     if (res.code === 0) {
       tableData.value = res.data
     } else {
-      ElMessage.error(res.message)
+      ElMessage.error(res.description)
     }
   })
 }
@@ -153,7 +153,7 @@ async function submit() {
       ElMessage.success('修改成功！')
       loadUser()
     } else {
-      ElMessage.error(res.message)
+      ElMessage.error(res.description)
     }
   })
 }
