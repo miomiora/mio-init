@@ -1,5 +1,5 @@
 # user-center
-Gin+Gorm+MySQL+Redis做了一个用户管理系统的后端
+Gin+Gorm+MySQL+Redis做了一个用户管理系统的后端，前端在frontend文件夹中
 
 # 需要安装以下模块
 ```bash
