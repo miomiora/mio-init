@@ -1,9 +1,9 @@
 <template>
     <h1>登录页面</h1>
-    <div style="width: 300px">
-      <el-input v-model="user_account" placeholder="请输入用户名"  />
+    <div style="width: 40vw">
+      <el-input v-model="user_account" placeholder="请输入用户名; 用户只能以字母开头，不能小于4位"  />
       <p></p>
-      <el-input v-model="user_password" placeholder="请输入密码" show-password/>
+      <el-input v-model="user_password" placeholder="请输入密码; 密码不能小于8位" show-password/>
       <p></p>
       <el-button type="primary" @click="login" >登录</el-button>
       <p></p>
@@ -33,9 +33,9 @@ async function login() {
       ElMessage.success('登录成功')
       // 设置Token
       if (res.data.user.role === 1) {
-        router.push('adminPage')
+        window.location.href = 'adminPage'
       } else if (res.data.user.role === 0) {
-        router.push('userPage')
+        window.location.href = 'userPage'
       }
       localStorage.setItem('token', res.data.token);
     } else {
@@ -45,7 +45,7 @@ async function login() {
 }
 
 function toRegister() {
-  router.push('register')
+  window.location.href= 'register'
 }
 
 async function getCurrentUser() {
@@ -53,9 +53,9 @@ async function getCurrentUser() {
     if( res.code === 0 ) {
       ElMessage.success('用户已经登录')
       if(res.data.role === 0) {
-        router.push('userPage')
+        window.location.href ='userPage'
       } else if (res.data.role === 1) {
-        router.push('adminPage')
+        window.location.href ='adminPage'
       }
     }
   });

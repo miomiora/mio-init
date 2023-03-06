@@ -1,6 +1,5 @@
 <template>
   <h1>管理员页面</h1>
-  <el-button type="primary" @click="loadUser">加载用户数据</el-button>
   <el-button type="danger" @click="logout">退出登录</el-button>
   <el-table :data="tableData" stripe style="width: 100%">
     <el-table-column prop="id" label="id" width="50" />
@@ -14,11 +13,33 @@
     <el-table-column prop="user_account" label="用户名" width="100" />
     <el-table-column prop="user_name" label="用户昵称" width="100"/>
     <el-table-column prop="email" label="电子邮箱" width="180"/>
-    <el-table-column prop="gender" label="性别" width="70" />
-    <el-table-column prop="phone" label="手机号码" width="150"/>
-    <el-table-column prop="user_status" label="状态" width="70"/>
 
-    <el-table-column fixed="right" label="Operations" width="120">
+    <el-table-column
+        prop="gender"
+        label="性别"
+        width="60"
+    >
+      <template #default="scope">
+        <el-tag v-if="scope.row.gender === 0" >男</el-tag>
+        <el-tag v-if="scope.row.gender === 1" >女</el-tag>
+      </template>
+    </el-table-column>
+
+    <el-table-column prop="phone" label="手机号码" width="120"/>
+
+    <el-table-column
+        prop="user_status"
+        label="状态"
+        width="100"
+    >
+      <template #default="scope">
+        <el-tag v-if="scope.row.user_status === 0" >正常</el-tag>
+        <el-tag v-if="scope.row.user_status === 1" type="error">封禁</el-tag>
+      </template>
+    </el-table-column>
+
+
+    <el-table-column fixed="right" label="操作" width="120">
       <template v-slot="scope">
         <el-button link type="primary" size="small" @click="edit(scope.row)"> 修改</el-button>
         <el-button link type="primary" size="small" @click="editPass(scope.row)"> 修改密码</el-button>
@@ -97,10 +118,10 @@
 import {onMounted, ref} from "vue";
 import request from "../plugin/request";
 import {ElMessage} from "element-plus";
-import {useRouter} from "vue-router";
+// import {useRouter} from "vue-router";
 
 const tableData = ref();
-const router = useRouter();
+// const router = useRouter();
 const currentPage = ref(1);
 let dialogVisible = ref(false)
 let dialogVisible2 = ref(false)
@@ -151,15 +172,11 @@ async function submit() {
   request.put('update/'+editUser.value.id, editUser.value).then(res => {
     if (res.code === 0) {
       ElMessage.success('修改成功！')
-      loadUser()
+      window.location.href = ''
     } else {
       ElMessage.error(res.description)
     }
   })
-}
-
-function loadUser() {
-  router.go(0)
 }
 
 function edit( row) {
@@ -185,7 +202,7 @@ async function logout() {
   request.post('logout').then(res => {
     if (res.code === 0) {
       ElMessage.success('登出成功')
-      router.push('/')
+      window.location.href = '/'
     } else {
       ElMessage.error(res.message)
     }

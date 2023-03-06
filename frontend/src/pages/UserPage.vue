@@ -1,27 +1,28 @@
 <template>
   <h1>用户页面</h1>
-  <el-button type="primary" @click="loadUser">加载用户数据</el-button>
   <el-button type="primary" @click="changePass">修改密码</el-button>
-
   <el-button type="danger" @click="logout">退出登录</el-button>
-<p></p>
-  <el-input v-model="editUser.user_account" :placeholder="editUser.user_account" />
   <p></p>
-  <el-input v-model="editUser.user_name" placeholder="昵称" />
-  <p></p>
-  <el-input v-model="editUser.avatar_url" placeholder="头像url" />
-  <p></p>
-  <el-input v-model="editUser.email" placeholder="电子邮箱" />
-  <p></p>
+  <div style="width: 40vw">
+    <el-input v-model="editUser.user_account" :placeholder="editUser.user_account" />
+    <p></p>
+    <el-input v-model="editUser.user_name" placeholder="昵称" />
+    <p></p>
+    <el-input v-model="editUser.avatar_url" placeholder="头像url" />
+    <p></p>
+    <el-input v-model="editUser.email" placeholder="电子邮箱" />
+    <p></p>
 
-  <el-radio-group v-model="editUser.gender" class="ml-4">
-    <el-radio :label=0>男</el-radio>
-    <el-radio :label=1>女</el-radio>
-  </el-radio-group>
+    <el-radio-group v-model="editUser.gender" class="ml-4">
+      <el-radio :label=0>男</el-radio>
+      <el-radio :label=1>女</el-radio>
+    </el-radio-group>
+    <p></p>
+    <el-input v-model="editUser.phone" placeholder="电话" />
+    <p></p>
+    <el-button type="primary" @click="submit">修改 </el-button>
+  </div>
 
-  <el-input v-model="editUser.phone" placeholder="电话" />
-  <p></p>
-  <el-button type="primary" @click="submit">Confirm </el-button>
 
   <el-dialog
       v-model="dialogVisible"
@@ -111,22 +112,22 @@ async function submit() {
   request.put('update', editUser.value).then(res => {
     if (res.code === 0) {
       ElMessage.success('修改成功！')
-      router.go(0)
+      // router.go(0)
     } else {
       ElMessage.error(res.description)
     }
   })
 }
 
-function loadUser() {
-  router.go(0)
-}
+// function loadUser() {
+//   router.go(0)
+// }
 
 async function logout() {
   request.post('logout').then(res => {
     if (res.code === 0) {
       ElMessage.success('登出成功')
-      router.push('/')
+      window.location.href ='/'
     } else {
       ElMessage.error(res.description)
     }
