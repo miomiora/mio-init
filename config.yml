@@ -1,0 +1,28 @@
+name: mio-init
+mode: dev
+port: 8081
+version: v0.0.1
+start_time: "2023-05-01"
+
+log:
+  level: debug
+  filename: mio-init.log
+  max_size: 200
+  max_age: 30
+  max_backups: 7
+
+mysql:
+  host: 127.0.0.1
+  port: 92
+  user: gin
+  password: 123321
+  dbname: gin_demo
+  max_open_conn: 200
+  max_idle_conn: 50
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  db: 0
+  pool_size: 100
+  password:
