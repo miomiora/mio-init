@@ -76,7 +76,7 @@ func (userDAO) QueryUserVOByUserId(id int64) (*model.UserVO, error) {
 
 func (userDAO) QueryUserList(params *model.ListParams) ([]*model.User, error) {
 	var u []*model.User
-	err := db.Unscoped().Limit(params.Size).Offset(params.Page - 1).Find(&u).Error
+	err := db.Unscoped().Limit(params.Size).Offset(params.Size * (params.Page - 1)).Find(&u).Error
 	if err != nil {
 		zap.L().Warn("[dao mysql user] query user list error ", zap.Error(err))
 		return nil, err
@@ -86,7 +86,7 @@ func (userDAO) QueryUserList(params *model.ListParams) ([]*model.User, error) {
 
 func (userDAO) QueryUserVOList(params *model.ListParams) ([]*model.UserVO, error) {
 	var u []*model.UserVO
-	err := db.Limit(params.Size).Offset(params.Page - 1).Model(&model.User{}).Scan(&u).Error
+	err := db.Limit(params.Size).Offset(params.Size * (params.Page - 1)).Model(&model.User{}).Scan(&u).Error
 	if err != nil {
 		zap.L().Warn("[dao mysql user] query user vo error ", zap.Error(err))
 		return nil, err

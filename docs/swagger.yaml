@@ -39,33 +39,33 @@ definitions:
     properties:
       content:
         type: string
-      post_id:
+      postId:
         example: "0"
         type: string
       title:
         type: string
     required:
     - content
-    - post_id
+    - postId
     - title
     type: object
   model.PostDTOUpdateBySelf:
     properties:
       content:
         type: string
-      post_id:
+      postId:
         example: "0"
         type: string
       title:
         type: string
-      user_id:
+      userId:
         example: "0"
         type: string
     required:
     - content
-    - post_id
+    - postId
     - title
-    - user_id
+    - userId
     type: object
   model.UserDTOAdd:
     properties:
@@ -73,12 +73,12 @@ definitions:
         type: string
       password:
         type: string
-      re_password:
+      rePassword:
         type: string
     required:
     - account
     - password
-    - re_password
+    - rePassword
     type: object
   model.UserDTOLogin:
     properties:
@@ -96,12 +96,12 @@ definitions:
         type: string
       password:
         type: string
-      re_password:
+      rePassword:
         type: string
     required:
     - account
     - password
-    - re_password
+    - rePassword
     type: object
   model.UserDTOUpdateByAdmin:
     properties:
@@ -117,16 +117,16 @@ definitions:
         type: string
       phone:
         type: string
-      re_password:
+      rePassword:
         type: string
-      user_id:
+      userId:
         example: "0"
         type: string
-      user_role:
+      userRole:
         type: integer
     required:
     - account
-    - user_id
+    - userId
     type: object
   model.UserDTOUpdateBySelf:
     properties:
@@ -142,14 +142,14 @@ definitions:
         type: string
       phone:
         type: string
-      re_password:
+      rePassword:
         type: string
-      user_id:
+      userId:
         example: "0"
         type: string
     required:
     - account
-    - user_id
+    - userId
     type: object
 host: 127.0.0.1:8081
 info:
@@ -198,9 +198,9 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 需要删除的post_id
+      - description: 需要删除的postId
         in: query
-        name: post_id
+        name: postId
         required: true
         type: string
       produces:
@@ -212,7 +212,7 @@ paths:
             $ref: '#/definitions/controller.Response'
       security:
       - ApiKeyAuth: []
-      summary: 通过post_id删除文章
+      summary: 通过postId删除文章
       tags:
       - 文章相关接口
   /post/get:
@@ -225,9 +225,9 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 需要查询的post_id
+      - description: 需要查询的postId
         in: query
-        name: post_id
+        name: postId
         required: true
         type: string
       produces:
@@ -239,7 +239,7 @@ paths:
             $ref: '#/definitions/controller.Response'
       security:
       - ApiKeyAuth: []
-      summary: 管理员通过post_id获取文章全部数据
+      summary: 管理员通过postId获取文章全部数据
       tags:
       - 文章相关接口
   /post/get/vo:
@@ -254,7 +254,7 @@ paths:
         type: string
       - description: 需要查找的文章id
         in: query
-        name: post_id
+        name: postId
         required: true
         type: string
       produces:
@@ -266,7 +266,7 @@ paths:
             $ref: '#/definitions/controller.Response'
       security:
       - ApiKeyAuth: []
-      summary: 通过post_id获取文章视图
+      summary: 通过postId获取文章视图
       tags:
       - 文章相关接口
   /post/list/page:
@@ -475,9 +475,9 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 需要删除的user_id
+      - description: 需要删除的userId
         in: query
-        name: user_id
+        name: userId
         required: true
         type: string
       produces:
@@ -489,7 +489,7 @@ paths:
             $ref: '#/definitions/controller.Response'
       security:
       - ApiKeyAuth: []
-      summary: 管理员根据user_id删除用户
+      summary: 管理员根据userId删除用户
       tags:
       - 用户相关接口
   /user/get:
@@ -502,9 +502,9 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 需要查询的user_id
+      - description: 需要查询的userId
         in: query
-        name: user_id
+        name: userId
         required: true
         type: string
       produces:
@@ -516,7 +516,7 @@ paths:
             $ref: '#/definitions/controller.Response'
       security:
       - ApiKeyAuth: []
-      summary: 管理员根据user_id查询用户完整信息
+      summary: 管理员根据userId查询用户完整信息
       tags:
       - 用户相关接口
   /user/get/login:
@@ -553,7 +553,7 @@ paths:
         type: string
       - description: 需要查找的用户id
         in: query
-        name: user_id
+        name: userId
         required: true
         type: string
       produces:
@@ -565,7 +565,7 @@ paths:
             $ref: '#/definitions/controller.Response'
       security:
       - ApiKeyAuth: []
-      summary: 根据user_id查找用户视图
+      summary: 根据userId查找用户视图
       tags:
       - 用户相关接口
   /user/list/page:
@@ -717,7 +717,7 @@ paths:
             $ref: '#/definitions/controller.Response'
       security:
       - ApiKeyAuth: []
-      summary: 管理员根据user_id更新用户信息
+      summary: 管理员根据userId更新用户信息
       tags:
       - 用户相关接口
   /user/update/my:

@@ -80,7 +80,7 @@ const docTemplate = `{
                 "tags": [
                     "文章相关接口"
                 ],
-                "summary": "通过post_id删除文章",
+                "summary": "通过postId删除文章",
                 "parameters": [
                     {
                         "type": "string",
@@ -91,8 +91,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "需要删除的post_id",
-                        "name": "post_id",
+                        "description": "需要删除的postId",
+                        "name": "postId",
                         "in": "query",
                         "required": true
                     }
@@ -123,7 +123,7 @@ const docTemplate = `{
                 "tags": [
                     "文章相关接口"
                 ],
-                "summary": "管理员通过post_id获取文章全部数据",
+                "summary": "管理员通过postId获取文章全部数据",
                 "parameters": [
                     {
                         "type": "string",
@@ -134,8 +134,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "需要查询的post_id",
-                        "name": "post_id",
+                        "description": "需要查询的postId",
+                        "name": "postId",
                         "in": "query",
                         "required": true
                     }
@@ -166,7 +166,7 @@ const docTemplate = `{
                 "tags": [
                     "文章相关接口"
                 ],
-                "summary": "通过post_id获取文章视图",
+                "summary": "通过postId获取文章视图",
                 "parameters": [
                     {
                         "type": "string",
@@ -178,7 +178,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "需要查找的文章id",
-                        "name": "post_id",
+                        "name": "postId",
                         "in": "query",
                         "required": true
                     }
@@ -524,7 +524,7 @@ const docTemplate = `{
                 "tags": [
                     "用户相关接口"
                 ],
-                "summary": "管理员根据user_id删除用户",
+                "summary": "管理员根据userId删除用户",
                 "parameters": [
                     {
                         "type": "string",
@@ -535,8 +535,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "需要删除的user_id",
-                        "name": "user_id",
+                        "description": "需要删除的userId",
+                        "name": "userId",
                         "in": "query",
                         "required": true
                     }
@@ -567,7 +567,7 @@ const docTemplate = `{
                 "tags": [
                     "用户相关接口"
                 ],
-                "summary": "管理员根据user_id查询用户完整信息",
+                "summary": "管理员根据userId查询用户完整信息",
                 "parameters": [
                     {
                         "type": "string",
@@ -578,8 +578,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "需要查询的user_id",
-                        "name": "user_id",
+                        "description": "需要查询的userId",
+                        "name": "userId",
                         "in": "query",
                         "required": true
                     }
@@ -646,7 +646,7 @@ const docTemplate = `{
                 "tags": [
                     "用户相关接口"
                 ],
-                "summary": "根据user_id查找用户视图",
+                "summary": "根据userId查找用户视图",
                 "parameters": [
                     {
                         "type": "string",
@@ -658,7 +658,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "需要查找的用户id",
-                        "name": "user_id",
+                        "name": "userId",
                         "in": "query",
                         "required": true
                     }
@@ -891,7 +891,7 @@ const docTemplate = `{
                 "tags": [
                     "用户相关接口"
                 ],
-                "summary": "管理员根据user_id更新用户信息",
+                "summary": "管理员根据userId更新用户信息",
                 "parameters": [
                     {
                         "type": "string",
@@ -1024,14 +1024,14 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "content",
-                "post_id",
+                "postId",
                 "title"
             ],
             "properties": {
                 "content": {
                     "type": "string"
                 },
-                "post_id": {
+                "postId": {
                     "type": "string",
                     "example": "0"
                 },
@@ -1044,22 +1044,22 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "content",
-                "post_id",
+                "postId",
                 "title",
-                "user_id"
+                "userId"
             ],
             "properties": {
                 "content": {
                     "type": "string"
                 },
-                "post_id": {
+                "postId": {
                     "type": "string",
                     "example": "0"
                 },
                 "title": {
                     "type": "string"
                 },
-                "user_id": {
+                "userId": {
                     "type": "string",
                     "example": "0"
                 }
@@ -1070,7 +1070,7 @@ const docTemplate = `{
             "required": [
                 "account",
                 "password",
-                "re_password"
+                "rePassword"
             ],
             "properties": {
                 "account": {
@@ -1079,7 +1079,7 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
-                "re_password": {
+                "rePassword": {
                     "type": "string"
                 }
             }
@@ -1104,7 +1104,7 @@ const docTemplate = `{
             "required": [
                 "account",
                 "password",
-                "re_password"
+                "rePassword"
             ],
             "properties": {
                 "account": {
@@ -1113,7 +1113,7 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
-                "re_password": {
+                "rePassword": {
                     "type": "string"
                 }
             }
@@ -1122,7 +1122,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "account",
-                "user_id"
+                "userId"
             ],
             "properties": {
                 "account": {
@@ -1143,14 +1143,14 @@ const docTemplate = `{
                 "phone": {
                     "type": "string"
                 },
-                "re_password": {
+                "rePassword": {
                     "type": "string"
                 },
-                "user_id": {
+                "userId": {
                     "type": "string",
                     "example": "0"
                 },
-                "user_role": {
+                "userRole": {
                     "type": "integer"
                 }
             }
@@ -1159,7 +1159,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "account",
-                "user_id"
+                "userId"
             ],
             "properties": {
                 "account": {
@@ -1180,10 +1180,10 @@ const docTemplate = `{
                 "phone": {
                     "type": "string"
                 },
-                "re_password": {
+                "rePassword": {
                     "type": "string"
                 },
-                "user_id": {
+                "userId": {
                     "type": "string",
                     "example": "0"
                 }

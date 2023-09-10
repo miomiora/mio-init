@@ -40,7 +40,7 @@ func (postDAO) QueryPostVOByPostId(id int64) (*model.PostVO, error) {
 
 func (postDAO) QueryPostList(params *model.ListParams) ([]*model.Post, error) {
 	var u []*model.Post
-	err := db.Unscoped().Limit(params.Size).Offset(params.Page - 1).Find(&u).Error
+	err := db.Unscoped().Limit(params.Size).Offset(params.Size * (params.Page - 1)).Find(&u).Error
 	if err != nil {
 		zap.L().Warn("[dao mysql post] query post list error ", zap.Error(err))
 		return nil, err
@@ -50,7 +50,7 @@ func (postDAO) QueryPostList(params *model.ListParams) ([]*model.Post, error) {
 
 func (postDAO) QueryPostVOList(params *model.ListParams) ([]*model.PostVO, error) {
 	var u []*model.PostVO
-	err := db.Limit(params.Size).Offset(params.Page - 1).Model(&model.Post{}).Scan(&u).Error
+	err := db.Limit(params.Size).Offset(params.Size * (params.Page - 1)).Model(&model.Post{}).Scan(&u).Error
 	if err != nil {
 		zap.L().Warn("[dao mysql post] query post vo error ", zap.Error(err))
 		return nil, err

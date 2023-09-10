@@ -89,31 +89,31 @@ func (postController) UpdateBySelf(c *gin.Context) {
 }
 
 // GetPostVOByPostId
-// @Summary 通过post_id获取文章视图
+// @Summary 通过postId获取文章视图
 // @Tags 文章相关接口
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "用户令牌 Token 登录后产生"
-// @Param post_id query string true "需要查找的文章id"
+// @Param postId query string true "需要查找的文章id"
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /post/get/vo [get]
 func (postController) GetPostVOByPostId(c *gin.Context) {
 	value := c.Query(util.KeyPostId)
 	if value == "" {
-		zap.L().Warn("[controller postController GetPostVOByPostId] query post_id failed ")
+		zap.L().Warn("[controller postController GetPostVOByPostId] query postId failed ")
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	postId, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
-		zap.L().Warn("[controller postController GetPostVOByPostId] parse post_id failed ", zap.Error(err))
+		zap.L().Warn("[controller postController GetPostVOByPostId] parse postId failed ", zap.Error(err))
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	data, err := logic.Post.GetPostVOByPostId(postId)
 	if err != nil {
-		zap.L().Warn("[controller postController GetPostVOByPostId] get post vo by post_id failed ", zap.Error(err))
+		zap.L().Warn("[controller postController GetPostVOByPostId] get post vo by postId failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
 		return
 	}
@@ -218,30 +218,30 @@ func (postController) AddPost(c *gin.Context) {
 }
 
 // DeletePostByPostId
-// @Summary 通过post_id删除文章
+// @Summary 通过postId删除文章
 // @Tags 文章相关接口
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "用户令牌 Token 登录后产生，需为管理员"
-// @Param post_id query string true "需要删除的post_id"
+// @Param postId query string true "需要删除的postId"
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /post/delete [post]
 func (postController) DeletePostByPostId(c *gin.Context) {
 	value := c.Query(util.KeyPostId)
 	if value == "" {
-		zap.L().Warn("[controller postController DeletePostByPostId] query post_id failed ")
+		zap.L().Warn("[controller postController DeletePostByPostId] query postId failed ")
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	postId, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
-		zap.L().Warn("[controller postController DeletePostByPostId] parse post_id failed ", zap.Error(err))
+		zap.L().Warn("[controller postController DeletePostByPostId] parse postId failed ", zap.Error(err))
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	if err = logic.Post.DeletePostByPostId(postId); err != nil {
-		zap.L().Warn("[controller postController DeletePostByPostId] delete post by post_id failed ", zap.Error(err))
+		zap.L().Warn("[controller postController DeletePostByPostId] delete post by postId failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
 		return
 	}
@@ -279,31 +279,31 @@ func (postController) UpdatePostByAdmin(c *gin.Context) {
 }
 
 // GetPostByPostId
-// @Summary 管理员通过post_id获取文章全部数据
+// @Summary 管理员通过postId获取文章全部数据
 // @Tags 文章相关接口
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "用户令牌 Token 登录后产生，需为管理员"
-// @Param post_id query string true "需要查询的post_id"
+// @Param postId query string true "需要查询的postId"
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /post/get [get]
 func (postController) GetPostByPostId(c *gin.Context) {
 	value := c.Query(util.KeyPostId)
 	if value == "" {
-		zap.L().Warn("[controller postController GetPostByPostId] query post_id failed ")
+		zap.L().Warn("[controller postController GetPostByPostId] query postId failed ")
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	postId, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
-		zap.L().Warn("[controller postController GetPostByPostId] parse post_id failed ", zap.Error(err))
+		zap.L().Warn("[controller postController GetPostByPostId] parse postId failed ", zap.Error(err))
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	data, err := logic.Post.GetPostByPostId(postId)
 	if err != nil {
-		zap.L().Warn("[controller postController GetPostByPostId] get post by post_id failed ", zap.Error(err))
+		zap.L().Warn("[controller postController GetPostByPostId] get post by postId failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
 		return
 	}

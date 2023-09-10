@@ -165,31 +165,31 @@ func (userController) UpdateBySelf(c *gin.Context) {
 }
 
 // GetUserVOByUserId
-// @Summary 根据user_id查找用户视图
+// @Summary 根据userId查找用户视图
 // @Tags 用户相关接口
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "用户令牌 Token 登录后产生"
-// @Param user_id query string true "需要查找的用户id"
+// @Param userId query string true "需要查找的用户id"
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /user/get/vo [get]
 func (userController) GetUserVOByUserId(c *gin.Context) {
 	value := c.Query(util.KeyUserId)
 	if value == "" {
-		zap.L().Warn("[controller userController GetUserVOByUserId] query user_id failed ")
+		zap.L().Warn("[controller userController GetUserVOByUserId] query userId failed ")
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	userId, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
-		zap.L().Warn("[controller userController GetUserVOByUserId] parse user_id failed ", zap.Error(err))
+		zap.L().Warn("[controller userController GetUserVOByUserId] parse userId failed ", zap.Error(err))
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	data, err := logic.User.GetUserVOByUserId(userId)
 	if err != nil {
-		zap.L().Warn("[controller userController GetUserVOByUserId] get user vo by user_id error ", zap.Error(err))
+		zap.L().Warn("[controller userController GetUserVOByUserId] get user vo by userId error ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
 		return
 	}
@@ -257,30 +257,30 @@ func (userController) AddUser(c *gin.Context) {
 }
 
 // DeleteUserByUserId
-// @Summary 管理员根据user_id删除用户
+// @Summary 管理员根据userId删除用户
 // @Tags 用户相关接口
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "用户令牌 Token 登录后产生，需为管理员"
-// @Param user_id query string true "需要删除的user_id"
+// @Param userId query string true "需要删除的userId"
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /user/delete [post]
 func (userController) DeleteUserByUserId(c *gin.Context) {
 	value := c.Query(util.KeyUserId)
 	if value == "" {
-		zap.L().Warn("[controller userController DeleteUserByUserId] query user_id failed ")
+		zap.L().Warn("[controller userController DeleteUserByUserId] query userId failed ")
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	userId, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
-		zap.L().Warn("[controller userController DeleteUserByUserId] parse user_id failed ", zap.Error(err))
+		zap.L().Warn("[controller userController DeleteUserByUserId] parse userId failed ", zap.Error(err))
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	if err = logic.User.DeleteUserByUserId(userId); err != nil {
-		zap.L().Warn("[controller userController DeleteUserByUserId] delete user by user_id failed ", zap.Error(err))
+		zap.L().Warn("[controller userController DeleteUserByUserId] delete user by userId failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
 		return
 	}
@@ -288,7 +288,7 @@ func (userController) DeleteUserByUserId(c *gin.Context) {
 }
 
 // UpdateUserByAdmin
-// @Summary 管理员根据user_id更新用户信息
+// @Summary 管理员根据userId更新用户信息
 // @Tags 用户相关接口
 // @Accept json
 // @Produce json
@@ -318,31 +318,31 @@ func (userController) UpdateUserByAdmin(c *gin.Context) {
 }
 
 // GetUserByUserId
-// @Summary 管理员根据user_id查询用户完整信息
+// @Summary 管理员根据userId查询用户完整信息
 // @Tags 用户相关接口
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "用户令牌 Token 登录后产生，需为管理员"
-// @Param user_id query string true "需要查询的user_id"
+// @Param userId query string true "需要查询的userId"
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /user/get [get]
 func (userController) GetUserByUserId(c *gin.Context) {
 	value := c.Query(util.KeyUserId)
 	if value == "" {
-		zap.L().Warn("[controller userController GetUserVOByUserId] query user_id failed ")
+		zap.L().Warn("[controller userController GetUserVOByUserId] query userId failed ")
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	userId, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
-		zap.L().Warn("[controller userController GetUserByUserId] parse user_id failed ", zap.Error(err))
+		zap.L().Warn("[controller userController GetUserByUserId] parse userId failed ", zap.Error(err))
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	data, err := logic.User.GetUserByUserId(userId)
 	if err != nil {
-		zap.L().Warn("[controller userController GetUserByUserId] get user by user_id failed ", zap.Error(err))
+		zap.L().Warn("[controller userController GetUserByUserId] get user by userId failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
 		return
 	}
