@@ -60,7 +60,7 @@ func (postDAO) QueryPostVOList(params *model.ListParams) ([]*model.PostVO, error
 
 func (postDAO) QueryPostVOListByUserId(params *model.ListParams, userId int64) ([]*model.PostVO, error) {
 	var u []*model.PostVO
-	err := db.Limit(params.Size).Offset(params.Page-1).Model(&model.Post{}).Where("user_id = ?", userId).Scan(&u).Error
+	err := db.Limit(params.Size).Offset(params.Size*(params.Page-1)).Model(&model.Post{}).Where("user_id = ?", userId).Scan(&u).Error
 	if err != nil {
 		zap.L().Warn("[dao mysql post] query post vo error ", zap.Error(err))
 		return nil, err
