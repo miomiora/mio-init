@@ -5,21 +5,21 @@ import (
 	"github.com/swaggo/files"
 	gs "github.com/swaggo/gin-swagger"
 	_ "mio-init/docs"
-	"mio-init/internal/controller"
+	"mio-init/internal/ctrls"
+	middleware2 "mio-init/internal/middleware"
 	"mio-init/logger"
-	"mio-init/middleware"
 )
 
 func Setup() *gin.Engine {
 	r := gin.New()
-	r.Use(logger.GinLogger(), logger.GinRecovery(true), middleware.Cors, middleware.RefreshToken)
+	r.Use(logger.GinLogger(), logger.GinRecovery(true), middleware2.Cors, middleware2.RefreshToken)
 	r.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
 	apiGroup := r.Group("/api")
 
 	routerV1(apiGroup)
 
 	r.NoRoute(func(c *gin.Context) {
-		controller.ResponseError(c, controller.ErrorNotFound)
+		ctrls.ResponseError(c, ctrls.ErrorNotFound)
 	})
 
 	return r

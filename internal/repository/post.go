@@ -5,21 +5,21 @@ import (
 	"fmt"
 	"mio-init/internal/core"
 	"mio-init/internal/model"
-	"mio-init/internal/util"
+	"mio-init/util"
 )
 
 type postRepo struct {
 }
 
-var PostRepo = new(postRepo)
+var Post = new(postRepo)
 
 func (postRepo) Create(ctx context.Context, post *model.Post) error {
-	return core.GetDB().WithContext(ctx).Create(post).Error
+	return core.MySQL.GetDB().WithContext(ctx).Create(post).Error
 }
 
 func (postRepo) GetByPostId(ctx context.Context, postId int64) (*model.Post, error) {
 	var post model.Post
-	err := core.GetDB().WithContext(ctx).Where("post_id = ?", postId).First(&model.Post{}).Error
+	err := core.MySQL.GetDB().WithContext(ctx).Where("post_id = ?", postId).First(&model.Post{}).Error
 	return &post, err
 }
 
@@ -28,7 +28,7 @@ func (postRepo) GetByTitle(ctx context.Context, title string, page, pageSize int
 	var count int64
 
 	offset := (page - 1) * pageSize
-	if err := core.GetDB().WithContext(ctx).
+	if err := core.MySQL.GetDB().WithContext(ctx).
 		Where("title = ?", title).
 		Offset(offset).
 		Limit(pageSize).
@@ -44,14 +44,14 @@ func (postRepo) GetAllPosts(ctx context.Context, page, pageSize int, orderBy str
 	var count int64
 
 	// 1. 获取总数
-	if err := core.GetDB().WithContext(ctx).
+	if err := core.MySQL.GetDB().WithContext(ctx).
 		Model(&model.Post{}).
 		Count(&count).Error; err != nil {
 		return nil, 0, fmt.Errorf("count posts failed: %w", err)
 	}
 
 	// 2. 分页查询
-	query := core.GetDB().WithContext(ctx).Offset((page - 1) * pageSize).Limit(pageSize)
+	query := core.MySQL.GetDB().WithContext(ctx).Offset((page - 1) * pageSize).Limit(pageSize)
 
 	// 3. 动态排序（安全校验）
 	if orderBy != "" {
@@ -70,9 +70,9 @@ func (postRepo) GetAllPosts(ctx context.Context, page, pageSize int, orderBy str
 }
 
 func (postRepo) Update(ctx context.Context, post *model.Post) error {
-	return core.GetDB().WithContext(ctx).Save(post).Error
+	return core.MySQL.GetDB().WithContext(ctx).Save(post).Error
 }
 
 func (postRepo) Delete(ctx context.Context, postId int64) error {
-	return core.GetDB().WithContext(ctx).Where("post_id = ?", postId).Delete(&model.Post{}).Error
+	return core.MySQL.GetDB().WithContext(ctx).Where("post_id = ?", postId).Delete(&model.Post{}).Error
 }

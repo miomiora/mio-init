@@ -1,21 +1,20 @@
-package controller
+package ctrls
 
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
-	controller2 "mio-init/internal/ctrls"
-	"mio-init/model"
-	"mio-init/service"
+	"mio-init/internal/model"
+	"mio-init/internal/service"
 	"mio-init/util"
 	"strconv"
 )
 
-type userController struct {
+type userCtrl struct {
 }
 
-var User = new(userController)
+var User = new(userCtrl)
 
 // Login
 // @Summary 用户登录
@@ -26,28 +25,60 @@ var User = new(userController)
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /user/login [post]
-func (userController) Login(c *gin.Context) {
+func (userCtrl) Login(c *gin.Context) {
 	// 1、校验参数
-	u := new(model.UserDTOLogin)
+	u := new(model.UserLoginReq)
 	if err := c.ShouldBindJSON(u); err != nil {
 		// 请求参数有误
-		zap.L().Warn("[ctrls userController Login] login with invalid param ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorInvalidParams)
+		zap.L().Warn("[ctrls userCtrl Login] login with invalid param ", zap.Error(err))
+		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	// 2、业务处理
-	data, err := service.User.Login(u)
+	data, err := service.User.Login(c.Request.Context(), u)
 	if err != nil {
-		zap.L().Error("[ctrls userController Login] login failed ", zap.String("Account", u.Account), zap.Error(err))
+		zap.L().Error("[ctrls userCtrl Login] login failed ", zap.String("Account", u.Account), zap.Error(err))
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			controller2.ResponseErrorWithMsg(c, controller2.ErrorInvalidParams, "用户名或密码错误！")
+			ResponseErrorWithMsg(c, ErrorInvalidParams, "用户名或密码错误！")
 			return
 		}
-		controller2.ResponseError(c, controller2.ErrorServerBusy)
+		ResponseError(c, ErrorServerBusy)
 		return
 	}
 	// 3、返回响应
-	controller2.ResponseOK(c, data)
+	ResponseOK(c, data)
+}
+
+// Create
+// @Summary 用户注册
+// @Tags 用户相关接口
+// @Accept json
+// @Produce json
+// @Param object body model.UserCreateReq true "注册参数"
+// @Security ApiKeyAuth
+// @Success 200 {object} Response
+// @Router /user/register [post]
+func (userCtrl) Create(c *gin.Context) {
+	// 1、参数校验
+	u := new(model.UserCreateReq)
+	if err := c.ShouldBindJSON(u); err != nil {
+		// 请求参数有误
+		zap.L().Warn("[ctrls userCtrl Create] register with invalid param ", zap.Error(err))
+		ResponseError(c, ErrorInvalidParams)
+		return
+	}
+	// 2、业务处理
+	if err := service.User.Register(u); err != nil {
+		zap.L().Warn("[ctrls userCtrl Create] register failed ", zap.Error(err))
+		if errors.Is(err, service.ErrorUserExist) {
+			ResponseErrorWithMsg(c, ErrorInvalidParams, err.Error())
+			return
+		}
+		ResponseError(c, ErrorServerBusy)
+		return
+	}
+	// 3、返回响应
+	ResponseOK(c, nil)
 }
 
 // Logout
@@ -59,47 +90,15 @@ func (userController) Login(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /user/logout [post]
-func (userController) Logout(c *gin.Context) {
+func (userCtrl) Logout(c *gin.Context) {
 	token := c.GetHeader(util.TokenHeader)
 	err := service.User.Logout(token)
 	if err != nil {
-		zap.L().Warn("[ctrls userController Logout] logout failed ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorServerBusy)
+		zap.L().Warn("[ctrls userCtrl Logout] logout failed ", zap.Error(err))
+		ResponseError(c, ErrorServerBusy)
 		return
 	}
-	controller2.ResponseOK(c, nil)
-}
-
-// Register
-// @Summary 用户注册
-// @Tags 用户相关接口
-// @Accept json
-// @Produce json
-// @Param object body model.UserDTORegister true "注册参数"
-// @Security ApiKeyAuth
-// @Success 200 {object} Response
-// @Router /user/register [post]
-func (userController) Register(c *gin.Context) {
-	// 1、参数校验
-	u := new(model.UserDTORegister)
-	if err := c.ShouldBindJSON(u); err != nil {
-		// 请求参数有误
-		zap.L().Warn("[ctrls userController Create] register with invalid param ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorInvalidParams)
-		return
-	}
-	// 2、业务处理
-	if err := service.User.Register(u); err != nil {
-		zap.L().Warn("[ctrls userController Create] register failed ", zap.Error(err))
-		if errors.Is(err, service.ErrorUserExist) {
-			controller2.ResponseErrorWithMsg(c, controller2.ErrorInvalidParams, err.Error())
-			return
-		}
-		controller2.ResponseError(c, controller2.ErrorServerBusy)
-		return
-	}
-	// 3、返回响应
-	controller2.ResponseOK(c, nil)
+	ResponseOK(c, nil)
 }
 
 // GetLoginUser
@@ -111,21 +110,21 @@ func (userController) Register(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /user/get/login [get]
-func (userController) GetLoginUser(c *gin.Context) {
+func (userCtrl) GetLoginUser(c *gin.Context) {
 	// 根据 user id 返回对应的用户
 	userId, err := getUserId(c)
 	if err != nil {
-		zap.L().Warn("[ctrls userController GetLoginUser] get userId error ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorNotLogin)
+		zap.L().Warn("[ctrls userCtrl GetLoginUser] get userId error ", zap.Error(err))
+		ResponseError(c, ErrorNotLogin)
 		return
 	}
 	data, err := service.User.GetLoginUser(userId)
 	if err != nil {
-		zap.L().Warn("[ctrls userController GetLoginUser] get login user failed ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorForbidden)
+		zap.L().Warn("[ctrls userCtrl GetLoginUser] get login user failed ", zap.Error(err))
+		ResponseError(c, ErrorForbidden)
 		return
 	}
-	controller2.ResponseOK(c, data)
+	ResponseOK(c, data)
 }
 
 // UpdateBySelf
@@ -138,31 +137,31 @@ func (userController) GetLoginUser(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /user/update/my [post]
-func (userController) UpdateBySelf(c *gin.Context) {
+func (userCtrl) UpdateBySelf(c *gin.Context) {
 	// 验证参数
 	u := new(model.UserDTOUpdateBySelf)
 	err := c.ShouldBindJSON(u)
 	if err != nil || u.Password != u.RePassword {
-		zap.L().Warn("[ctrls userController UpdateBySelf] update by self with invalid param ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorInvalidParams)
+		zap.L().Warn("[ctrls userCtrl UpdateBySelf] update by self with invalid param ", zap.Error(err))
+		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	// 验证是否本人
 	userId, err := getUserId(c)
 	if err != nil || userId != u.UserId {
-		zap.L().Warn("[ctrls userController UpdateBySelf] get userId error ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorNotLogin)
+		zap.L().Warn("[ctrls userCtrl UpdateBySelf] get userId error ", zap.Error(err))
+		ResponseError(c, ErrorNotLogin)
 		return
 	}
 	// 业务
 	if err = service.User.UpdateBySelf(u); err != nil {
-		zap.L().Warn("[ctrls userController UpdateBySelf] update by self failed ", zap.Error(err))
+		zap.L().Warn("[ctrls userCtrl UpdateBySelf] update by self failed ", zap.Error(err))
 		if errors.Is(err, service.ErrorUserExist) {
-			controller2.ResponseErrorWithMsg(c, controller2.ErrorInvalidParams, err.Error())
+			ResponseErrorWithMsg(c, ErrorInvalidParams, err.Error())
 			return
 		}
 	}
-	controller2.ResponseOK(c, nil)
+	ResponseOK(c, nil)
 }
 
 // GetUserVOByUserId
@@ -175,26 +174,26 @@ func (userController) UpdateBySelf(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /user/get/vo [get]
-func (userController) GetUserVOByUserId(c *gin.Context) {
+func (userCtrl) GetUserVOByUserId(c *gin.Context) {
 	value := c.Query(util.KeyUserId)
 	if value == "" {
-		zap.L().Warn("[ctrls userController GetUserVOByUserId] query userId failed ")
-		controller2.ResponseError(c, controller2.ErrorInvalidParams)
+		zap.L().Warn("[ctrls userCtrl GetUserVOByUserId] query userId failed ")
+		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	userId, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
-		zap.L().Warn("[ctrls userController GetUserVOByUserId] parse userId failed ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorInvalidParams)
+		zap.L().Warn("[ctrls userCtrl GetUserVOByUserId] parse userId failed ", zap.Error(err))
+		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	data, err := service.User.GetUserVOByUserId(userId)
 	if err != nil {
-		zap.L().Warn("[ctrls userController GetUserVOByUserId] get user vo by userId error ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorServerBusy)
+		zap.L().Warn("[ctrls userCtrl GetUserVOByUserId] get user vo by userId error ", zap.Error(err))
+		ResponseError(c, ErrorServerBusy)
 		return
 	}
-	controller2.ResponseOK(c, data)
+	ResponseOK(c, data)
 
 }
 
@@ -208,20 +207,20 @@ func (userController) GetUserVOByUserId(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /user/list/page/vo [post]
-func (userController) GetUserVOList(c *gin.Context) {
+func (userCtrl) GetUserVOList(c *gin.Context) {
 	params := new(model.ListParams)
 	if err := c.ShouldBindJSON(params); err != nil {
-		zap.L().Warn("[ctrls userController GetUserVOList] get user vo list with invalid param ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorInvalidParams)
+		zap.L().Warn("[ctrls userCtrl GetUserVOList] get user vo list with invalid param ", zap.Error(err))
+		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	data, err := service.User.GetUserVOList(params)
 	if err != nil {
-		zap.L().Warn("[ctrls userController GetUserVOList] get user vo list failed ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorServerBusy)
+		zap.L().Warn("[ctrls userCtrl GetUserVOList] get user vo list failed ", zap.Error(err))
+		ResponseError(c, ErrorServerBusy)
 		return
 	}
-	controller2.ResponseOK(c, data)
+	ResponseOK(c, data)
 }
 
 // AddUser
@@ -234,27 +233,27 @@ func (userController) GetUserVOList(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /user/add [post]
-func (userController) AddUser(c *gin.Context) {
+func (userCtrl) AddUser(c *gin.Context) {
 	// 1、参数校验
 	u := new(model.UserDTOAdd)
 	if err := c.ShouldBindJSON(u); err != nil {
 		// 请求参数有误
-		zap.L().Error("[ctrls userController AddUser] add user with invalid param ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorInvalidParams)
+		zap.L().Error("[ctrls userCtrl AddUser] add user with invalid param ", zap.Error(err))
+		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	// 2、业务处理
 	if err := service.User.AddUser(u); err != nil {
-		zap.L().Error("[ctrls userController AddUser] add user failed ", zap.Error(err))
+		zap.L().Error("[ctrls userCtrl AddUser] add user failed ", zap.Error(err))
 		if errors.Is(err, service.ErrorUserExist) {
-			controller2.ResponseErrorWithMsg(c, controller2.ErrorInvalidParams, err.Error())
+			ResponseErrorWithMsg(c, ErrorInvalidParams, err.Error())
 			return
 		}
-		controller2.ResponseError(c, controller2.ErrorServerBusy)
+		ResponseError(c, ErrorServerBusy)
 		return
 	}
 	// 3、返回响应
-	controller2.ResponseOK(c, nil)
+	ResponseOK(c, nil)
 }
 
 // DeleteUserByUserId
@@ -267,25 +266,25 @@ func (userController) AddUser(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /user/delete [post]
-func (userController) DeleteUserByUserId(c *gin.Context) {
+func (userCtrl) DeleteUserByUserId(c *gin.Context) {
 	value := c.Query(util.KeyUserId)
 	if value == "" {
-		zap.L().Warn("[ctrls userController DeleteUserByUserId] query userId failed ")
-		controller2.ResponseError(c, controller2.ErrorInvalidParams)
+		zap.L().Warn("[ctrls userCtrl DeleteUserByUserId] query userId failed ")
+		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	userId, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
-		zap.L().Warn("[ctrls userController DeleteUserByUserId] parse userId failed ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorInvalidParams)
+		zap.L().Warn("[ctrls userCtrl DeleteUserByUserId] parse userId failed ", zap.Error(err))
+		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	if err = service.User.DeleteUserByUserId(userId); err != nil {
-		zap.L().Warn("[ctrls userController DeleteUserByUserId] delete user by userId failed ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorServerBusy)
+		zap.L().Warn("[ctrls userCtrl DeleteUserByUserId] delete user by userId failed ", zap.Error(err))
+		ResponseError(c, ErrorServerBusy)
 		return
 	}
-	controller2.ResponseOK(c, nil)
+	ResponseOK(c, nil)
 }
 
 // UpdateUserByAdmin
@@ -298,24 +297,24 @@ func (userController) DeleteUserByUserId(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /user/update [post]
-func (userController) UpdateUserByAdmin(c *gin.Context) {
+func (userCtrl) UpdateUserByAdmin(c *gin.Context) {
 	u := new(model.UserDTOUpdateByAdmin)
 	err := c.ShouldBindJSON(u)
 	if err != nil || u.Password != u.RePassword {
-		zap.L().Warn("[ctrls userController UpdateUserByAdmin] update user by admin with invalid param ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorInvalidParams)
+		zap.L().Warn("[ctrls userCtrl UpdateUserByAdmin] update user by admin with invalid param ", zap.Error(err))
+		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	// 业务
 	err = service.User.UpdateUserByAdmin(u)
 	if err != nil {
-		zap.L().Warn("[ctrls userController UpdateUserByAdmin] update user by admin failed ", zap.Error(err))
+		zap.L().Warn("[ctrls userCtrl UpdateUserByAdmin] update user by admin failed ", zap.Error(err))
 		if errors.Is(err, service.ErrorUserExist) {
-			controller2.ResponseErrorWithMsg(c, controller2.ErrorInvalidParams, err.Error())
+			ResponseErrorWithMsg(c, ErrorInvalidParams, err.Error())
 			return
 		}
 	}
-	controller2.ResponseOK(c, nil)
+	ResponseOK(c, nil)
 }
 
 // GetUserByUserId
@@ -328,26 +327,26 @@ func (userController) UpdateUserByAdmin(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /user/get [get]
-func (userController) GetUserByUserId(c *gin.Context) {
+func (userCtrl) GetUserByUserId(c *gin.Context) {
 	value := c.Query(util.KeyUserId)
 	if value == "" {
-		zap.L().Warn("[ctrls userController GetUserVOByUserId] query userId failed ")
-		controller2.ResponseError(c, controller2.ErrorInvalidParams)
+		zap.L().Warn("[ctrls userCtrl GetUserVOByUserId] query userId failed ")
+		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	userId, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
-		zap.L().Warn("[ctrls userController GetUserByUserId] parse userId failed ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorInvalidParams)
+		zap.L().Warn("[ctrls userCtrl GetUserByUserId] parse userId failed ", zap.Error(err))
+		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	data, err := service.User.GetUserByUserId(userId)
 	if err != nil {
-		zap.L().Warn("[ctrls userController GetUserByUserId] get user by userId failed ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorServerBusy)
+		zap.L().Warn("[ctrls userCtrl GetUserByUserId] get user by userId failed ", zap.Error(err))
+		ResponseError(c, ErrorServerBusy)
 		return
 	}
-	controller2.ResponseOK(c, data)
+	ResponseOK(c, data)
 }
 
 // GetUserList
@@ -360,19 +359,19 @@ func (userController) GetUserByUserId(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Success 200 {object} Response
 // @Router /user/list/page [post]
-func (userController) GetUserList(c *gin.Context) {
+func (userCtrl) GetUserList(c *gin.Context) {
 	params := new(model.ListParams)
 	err := c.ShouldBindJSON(params)
 	if err != nil {
-		zap.L().Warn("[ctrls userController GetUserList] get user list with invalid param ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorInvalidParams)
+		zap.L().Warn("[ctrls userCtrl GetUserList] get user list with invalid param ", zap.Error(err))
+		ResponseError(c, ErrorInvalidParams)
 		return
 	}
 	data, err := service.User.GetUserList(params)
 	if err != nil {
-		zap.L().Warn("[ctrls userController GetUserList] get user list failed ", zap.Error(err))
-		controller2.ResponseError(c, controller2.ErrorServerBusy)
+		zap.L().Warn("[ctrls userCtrl GetUserList] get user list failed ", zap.Error(err))
+		ResponseError(c, ErrorServerBusy)
 		return
 	}
-	controller2.ResponseOK(c, data)
+	ResponseOK(c, data)
 }
