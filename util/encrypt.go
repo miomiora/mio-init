@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 )
 
-func EncryptStr(original string) string {
+func Md5(original string) string {
 	hash := md5.New()
 	hash.Write([]byte(Secret))
 	hash.Write([]byte(original))

@@ -11,8 +11,10 @@ const (
 	KeyExp      = "exp"
 	KeyAccess   = "access"
 	KeyRefresh  = "refresh"
+	KeyPostId   = "post_id"
 
-	KeyPostId = "post_id"
+	TokenPrefix     = "user_refresh_token"
+	BlackListPrefix = "blackList"
 
 	TokenHeader = "Authorization"
 	TokenEmpty  = ""

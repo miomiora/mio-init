@@ -14,10 +14,7 @@ type redisCore struct {
 
 var Redis = new(redisCore)
 
-var (
-	client *redis.Client
-	ctx    context.Context
-)
+var client *redis.Client
 
 const (
 	TokenPrefix  = "login:token:"
@@ -32,13 +29,16 @@ func (redisCore) Init(cfg *config.RedisConfig) (err error) {
 		PoolSize: cfg.PoolSize, // 连接池大小
 	})
 
-	ctx = context.Background()
-	_, err = client.Ping(ctx).Result()
-	zap.L().Info("[dao redis Init] ping redis client failed ", zap.Error(err))
+	_, err = client.Ping(context.Background()).Result()
+	zap.L().Info("[repository redis Init] ping redis client failed ", zap.Error(err))
 	return
 }
 
 func (redisCore) Close() {
 	err := client.Close()
-	zap.L().Info("[dao redis Close] close the redis connect failed ", zap.Error(err))
+	zap.L().Info("[repository redis Close] close the redis connect failed ", zap.Error(err))
+}
+
+func (redisCore) GetClient() *redis.Client {
+	return client
 }

@@ -31,7 +31,7 @@ func RefreshToken(c *gin.Context) {
 	}
 
 	// 4. 生成新的 Token 对
-	newAccess, newRefresh, err := util.GenerateTokens(uint(userID))
+	newAccess, newRefresh, err := util.GenTokens(uint(userID))
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to generate tokens"})
 		return

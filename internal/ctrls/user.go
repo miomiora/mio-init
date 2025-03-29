@@ -45,6 +45,7 @@ func (userCtrl) Login(c *gin.Context) {
 		ResponseError(c, ErrorServerBusy)
 		return
 	}
+
 	// 3、返回响应
 	ResponseOK(c, data)
 }

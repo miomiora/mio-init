@@ -21,3 +21,11 @@ type UserLoginReq struct {
 	Account  string `json:"account" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
+
+type UserLoginRes struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+	UserId       int64  `json:"userId"`
+	Name         string `json:"name"`
+	Account      string `json:"account"`
+}

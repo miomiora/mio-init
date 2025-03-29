@@ -12,19 +12,29 @@ type userService struct {
 
 var User = new(userService)
 
-func (userService) Login(ctx context.Context, req *model.UserLoginReq) (*model.User, error) {
-	// 1、从数据库中校验用户名和密码是否正确
-	user, err := repository.User.Login(ctx, req.Account, util.EncryptStr(req.Password))
+func (userService) Login(ctx context.Context, req *model.UserLoginReq) (*model.UserLoginRes, error) {
+	user, err := repository.User.Login(ctx, req.Account, util.Md5(req.Password))
 	if err != nil {
 		return nil, err
 	}
 
-	accessToken, refreshToken, err := util.GenerateTokens(user.UserId)
+	accessToken, refreshToken, err := util.GenTokens(user.UserId)
 	if err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	_, err = repository.Cache.Set(ctx, util.GenRefreshKey(user.UserId), refreshToken, util.RefreshTokenExpire)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.UserLoginRes{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		UserId:       user.UserId,
+		Name:         user.Name,
+		Account:      user.Account,
+	}, nil
 }
 
 func (userService) Create(ctx context.Context, req *model.UserCreateReq) error {
@@ -32,10 +42,21 @@ func (userService) Create(ctx context.Context, req *model.UserCreateReq) error {
 		UserId:   util.GenSnowflakeID(),
 		Name:     req.Name,
 		Account:  req.Account,
-		Password: util.EncryptStr(req.Password),
+		Password: util.Md5(req.Password),
 	})
 }
 
-func (userService) Logout(ctx context.Context, userId int64) error {
+func (userService) Logout(ctx context.Context, userId int64, accessToken string) error {
+	_, err := repository.Cache.Del(ctx, util.GenRefreshKey(userId))
+	if err != nil {
+		return err
+	}
+
+	// 拉黑 accessToken
+	_, err = repository.Cache.Set(ctx, util.GenBlackListKey(accessToken), "1", util.AccessTokenExpire)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
