@@ -3,8 +3,8 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"mio-init/controller"
 	"mio-init/dao/redis"
+	"mio-init/internal/controller"
 	"mio-init/util"
 	"strconv"
 )

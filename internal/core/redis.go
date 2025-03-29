@@ -1,4 +1,4 @@
-package redis
+package core
 
 import (
 	"context"
@@ -8,6 +8,11 @@ import (
 	"mio-init/config"
 	"time"
 )
+
+type redisCore struct {
+}
+
+var Redis = new(redisCore)
 
 var (
 	client *redis.Client
@@ -19,7 +24,7 @@ const (
 	TokenTimeout = time.Hour * 24
 )
 
-func Init(cfg *config.RedisConfig) (err error) {
+func (redisCore) Init(cfg *config.RedisConfig) (err error) {
 	client = redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
 		Password: cfg.Password, // 密码
@@ -33,7 +38,7 @@ func Init(cfg *config.RedisConfig) (err error) {
 	return
 }
 
-func Close() {
+func (redisCore) Close() {
 	err := client.Close()
 	zap.L().Info("[dao redis Close] close the redis connect failed ", zap.Error(err))
 }

@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/files"
 	gs "github.com/swaggo/gin-swagger"
-	"mio-init/controller"
 	_ "mio-init/docs"
+	"mio-init/internal/controller"
 	"mio-init/logger"
 	"mio-init/middleware"
 )

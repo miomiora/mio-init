@@ -5,8 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"mio-init/config"
-	"mio-init/dao/mysql"
-	"mio-init/dao/redis"
+	"mio-init/internal/core"
 	"mio-init/logger"
 	"mio-init/router"
 	"mio-init/util"
@@ -41,17 +40,17 @@ func main() {
 	}
 	defer zap.L().Sync()
 	// 3、初始化MySQL
-	if err := mysql.Init(config.Conf.MySQLConfig); err != nil {
+	if err := core.Init(config.Conf.MySQLConfig); err != nil {
 		fmt.Printf("init mysql error : %s \n", err)
 		return
 	}
-	defer mysql.Close()
+	defer core.Close()
 	// 4、初始化Redis
-	if err := redis.Init(config.Conf.RedisConfig); err != nil {
+	if err := core.Init(config.Conf.RedisConfig); err != nil {
 		fmt.Printf("init redis error  %s \n", err)
 		return
 	}
-	defer redis.Close()
+	defer core.Close()
 	if err := util.Init(config.Conf.StartTime, config.Conf.MachineID); err != nil {
 		fmt.Printf("init snowflake error  %s \n", err)
 		return

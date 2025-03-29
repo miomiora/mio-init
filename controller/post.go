@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	controller2 "mio-init/internal/controller"
 	"mio-init/model"
 	"mio-init/service"
 	"mio-init/util"
@@ -31,24 +32,24 @@ func (postController) InsertPost(c *gin.Context) {
 	if err := c.ShouldBindJSON(p); err != nil {
 		// 请求参数有误
 		zap.L().Warn("[controller postController InsertPost] insert post with invalid param ", zap.Error(err))
-		ResponseError(c, ErrorInvalidParams)
+		controller2.ResponseError(c, controller2.ErrorInvalidParams)
 		return
 	}
 	// 获取userId
 	userId, err := getUserId(c)
 	if err != nil {
 		zap.L().Warn("[controller postController InsertPost] get userId error ", zap.Error(err))
-		ResponseError(c, ErrorServerBusy)
+		controller2.ResponseError(c, controller2.ErrorServerBusy)
 		return
 	}
 	// 2、业务处理
 	if err = service.Post.InsertPost(p, userId); err != nil {
 		zap.L().Warn("[controller postController InsertPost] insert post failed ", zap.Error(err))
-		ResponseError(c, ErrorServerBusy)
+		controller2.ResponseError(c, controller2.ErrorServerBusy)
 		return
 	}
 	// 3、返回响应
-	ResponseOK(c, nil)
+	controller2.ResponseOK(c, nil)
 }
 
 // UpdateBySelf
@@ -67,25 +68,25 @@ func (postController) UpdateBySelf(c *gin.Context) {
 	err := c.ShouldBindJSON(u)
 	if err != nil {
 		zap.L().Warn("[controller postController UpdateBySelf] update post by self with invalid param ", zap.Error(err))
-		ResponseError(c, ErrorInvalidParams)
+		controller2.ResponseError(c, controller2.ErrorInvalidParams)
 		return
 	}
 	// 验证是否本人
 	userId, err := getUserId(c)
 	if err != nil || userId != u.UserId {
 		zap.L().Warn("[controller postController UpdateBySelf] get userId error ", zap.Error(err))
-		ResponseError(c, ErrorNotLogin)
+		controller2.ResponseError(c, controller2.ErrorNotLogin)
 		return
 	}
 	// 业务
 	if err = service.Post.UpdateBySelf(u); err != nil {
 		zap.L().Warn("[controller postController UpdateBySelf] update post by self failed ", zap.Error(err))
 		if errors.Is(err, service.ErrorPostExist) {
-			ResponseErrorWithMsg(c, ErrorInvalidParams, err.Error())
+			controller2.ResponseErrorWithMsg(c, controller2.ErrorInvalidParams, err.Error())
 			return
 		}
 	}
-	ResponseOK(c, nil)
+	controller2.ResponseOK(c, nil)
 }
 
 // GetPostVOByPostId
@@ -102,22 +103,22 @@ func (postController) GetPostVOByPostId(c *gin.Context) {
 	value := c.Query(util.KeyPostId)
 	if value == "" {
 		zap.L().Warn("[controller postController GetPostVOByPostId] query postId failed ")
-		ResponseError(c, ErrorInvalidParams)
+		controller2.ResponseError(c, controller2.ErrorInvalidParams)
 		return
 	}
 	postId, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
 		zap.L().Warn("[controller postController GetPostVOByPostId] parse postId failed ", zap.Error(err))
-		ResponseError(c, ErrorInvalidParams)
+		controller2.ResponseError(c, controller2.ErrorInvalidParams)
 		return
 	}
 	data, err := service.Post.GetPostVOByPostId(postId)
 	if err != nil {
 		zap.L().Warn("[controller postController GetPostVOByPostId] get post vo by postId failed ", zap.Error(err))
-		ResponseError(c, ErrorServerBusy)
+		controller2.ResponseError(c, controller2.ErrorServerBusy)
 		return
 	}
-	ResponseOK(c, data)
+	controller2.ResponseOK(c, data)
 }
 
 // GetMyPostVOList
@@ -134,22 +135,22 @@ func (postController) GetMyPostVOList(c *gin.Context) {
 	params := new(model.ListParams)
 	if err := c.ShouldBindJSON(params); err != nil {
 		zap.L().Warn("[controller postController GetMyPostVOList] get my post vo list with invalid param ", zap.Error(err))
-		ResponseError(c, ErrorInvalidParams)
+		controller2.ResponseError(c, controller2.ErrorInvalidParams)
 		return
 	}
 	userId, err := getUserId(c)
 	if err != nil {
 		zap.L().Warn("[controller postController GetMyPostVOList] get userId error ", zap.Error(err))
-		ResponseError(c, ErrorServerBusy)
+		controller2.ResponseError(c, controller2.ErrorServerBusy)
 		return
 	}
 	data, err := service.Post.GetMyPostVOList(params, userId)
 	if err != nil {
 		zap.L().Warn("[controller postController GetMyPostVOList] get my post vo list failed ", zap.Error(err))
-		ResponseError(c, ErrorServerBusy)
+		controller2.ResponseError(c, controller2.ErrorServerBusy)
 		return
 	}
-	ResponseOK(c, data)
+	controller2.ResponseOK(c, data)
 }
 
 // GetPostVOList
@@ -166,16 +167,16 @@ func (postController) GetPostVOList(c *gin.Context) {
 	params := new(model.ListParams)
 	if err := c.ShouldBindJSON(params); err != nil {
 		zap.L().Warn("[controller postController GetPostVOList] get post vo list with invalid param ", zap.Error(err))
-		ResponseError(c, ErrorInvalidParams)
+		controller2.ResponseError(c, controller2.ErrorInvalidParams)
 		return
 	}
 	data, err := service.Post.GetPostVOList(params)
 	if err != nil {
 		zap.L().Warn("[controller postController GetPostVOList] get post vo list failed ", zap.Error(err))
-		ResponseError(c, ErrorServerBusy)
+		controller2.ResponseError(c, controller2.ErrorServerBusy)
 		return
 	}
-	ResponseOK(c, data)
+	controller2.ResponseOK(c, data)
 }
 
 // AddPost
@@ -194,27 +195,27 @@ func (postController) AddPost(c *gin.Context) {
 	if err := c.ShouldBindJSON(u); err != nil {
 		// 请求参数有误
 		zap.L().Error("[controller post AddPost] add post with invalid param ", zap.Error(err))
-		ResponseError(c, ErrorInvalidParams)
+		controller2.ResponseError(c, controller2.ErrorInvalidParams)
 		return
 	}
 	userId, err := getUserId(c)
 	if err != nil {
 		zap.L().Warn("[controller post AddPost] get userId error ")
-		ResponseError(c, ErrorServerBusy)
+		controller2.ResponseError(c, controller2.ErrorServerBusy)
 		return
 	}
 	// 2、业务处理
 	if err = service.Post.AddPost(u, userId); err != nil {
 		zap.L().Error("[controller post AddPost] add post failed ", zap.Error(err))
 		if errors.Is(err, service.ErrorPostExist) {
-			ResponseErrorWithMsg(c, ErrorInvalidParams, err.Error())
+			controller2.ResponseErrorWithMsg(c, controller2.ErrorInvalidParams, err.Error())
 			return
 		}
-		ResponseError(c, ErrorServerBusy)
+		controller2.ResponseError(c, controller2.ErrorServerBusy)
 		return
 	}
 	// 3、返回响应
-	ResponseOK(c, nil)
+	controller2.ResponseOK(c, nil)
 }
 
 // DeletePostByPostId
@@ -231,21 +232,21 @@ func (postController) DeletePostByPostId(c *gin.Context) {
 	value := c.Query(util.KeyPostId)
 	if value == "" {
 		zap.L().Warn("[controller postController DeletePostByPostId] query postId failed ")
-		ResponseError(c, ErrorInvalidParams)
+		controller2.ResponseError(c, controller2.ErrorInvalidParams)
 		return
 	}
 	postId, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
 		zap.L().Warn("[controller postController DeletePostByPostId] parse postId failed ", zap.Error(err))
-		ResponseError(c, ErrorInvalidParams)
+		controller2.ResponseError(c, controller2.ErrorInvalidParams)
 		return
 	}
 	if err = service.Post.DeletePostByPostId(postId); err != nil {
 		zap.L().Warn("[controller postController DeletePostByPostId] delete post by postId failed ", zap.Error(err))
-		ResponseError(c, ErrorServerBusy)
+		controller2.ResponseError(c, controller2.ErrorServerBusy)
 		return
 	}
-	ResponseOK(c, nil)
+	controller2.ResponseOK(c, nil)
 }
 
 // UpdatePostByAdmin
@@ -263,7 +264,7 @@ func (postController) UpdatePostByAdmin(c *gin.Context) {
 	err := c.ShouldBindJSON(u)
 	if err != nil {
 		zap.L().Warn("[controller postController UpdatePostByAdmin] update post by admin with invalid param ", zap.Error(err))
-		ResponseError(c, ErrorInvalidParams)
+		controller2.ResponseError(c, controller2.ErrorInvalidParams)
 		return
 	}
 	// 业务
@@ -271,11 +272,11 @@ func (postController) UpdatePostByAdmin(c *gin.Context) {
 	if err != nil {
 		zap.L().Warn("[controller postController UpdatePostByAdmin] update post by admin failed ", zap.Error(err))
 		if errors.Is(err, service.ErrorPostExist) {
-			ResponseErrorWithMsg(c, ErrorInvalidParams, err.Error())
+			controller2.ResponseErrorWithMsg(c, controller2.ErrorInvalidParams, err.Error())
 			return
 		}
 	}
-	ResponseOK(c, nil)
+	controller2.ResponseOK(c, nil)
 }
 
 // GetPostByPostId
@@ -292,22 +293,22 @@ func (postController) GetPostByPostId(c *gin.Context) {
 	value := c.Query(util.KeyPostId)
 	if value == "" {
 		zap.L().Warn("[controller postController GetPostByPostId] query postId failed ")
-		ResponseError(c, ErrorInvalidParams)
+		controller2.ResponseError(c, controller2.ErrorInvalidParams)
 		return
 	}
 	postId, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
 		zap.L().Warn("[controller postController GetPostByPostId] parse postId failed ", zap.Error(err))
-		ResponseError(c, ErrorInvalidParams)
+		controller2.ResponseError(c, controller2.ErrorInvalidParams)
 		return
 	}
 	data, err := service.Post.GetPostByPostId(postId)
 	if err != nil {
 		zap.L().Warn("[controller postController GetPostByPostId] get post by postId failed ", zap.Error(err))
-		ResponseError(c, ErrorServerBusy)
+		controller2.ResponseError(c, controller2.ErrorServerBusy)
 		return
 	}
-	ResponseOK(c, data)
+	controller2.ResponseOK(c, data)
 }
 
 // GetPostList
@@ -325,14 +326,14 @@ func (postController) GetPostList(c *gin.Context) {
 	err := c.ShouldBindJSON(params)
 	if err != nil {
 		zap.L().Warn("[controller postController GetPostList] get post list with invalid param ", zap.Error(err))
-		ResponseError(c, ErrorInvalidParams)
+		controller2.ResponseError(c, controller2.ErrorInvalidParams)
 		return
 	}
 	data, err := service.Post.GetPostList(params)
 	if err != nil {
 		zap.L().Warn("[controller postController GetPostList] get post list failed ", zap.Error(err))
-		ResponseError(c, ErrorServerBusy)
+		controller2.ResponseError(c, controller2.ErrorServerBusy)
 		return
 	}
-	ResponseOK(c, data)
+	controller2.ResponseOK(c, data)
 }

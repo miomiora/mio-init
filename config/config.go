@@ -52,7 +52,7 @@ func Init() (err error) {
 	viper.SetConfigFile("config.yml")
 	//viper.SetConfigName("config")
 	//viper.SetConfigType("yml")
-	viper.AddConfigPath(".")
+	viper.AddConfigPath("./config")
 	err = viper.ReadInConfig()
 	if err != nil {
 		return
