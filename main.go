@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"mio-init/config"
 	"mio-init/dao/mysql"
@@ -65,7 +66,7 @@ func main() {
 
 	go func() {
 		// 开启一个goroutine启动服务
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			zap.L().Info("listen: %s\n", zap.Error(err))
 		}
 	}()

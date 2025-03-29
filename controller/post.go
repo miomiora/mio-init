@@ -4,8 +4,8 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"mio-init/logic"
 	"mio-init/model"
+	"mio-init/service"
 	"mio-init/util"
 	"strconv"
 )
@@ -42,7 +42,7 @@ func (postController) InsertPost(c *gin.Context) {
 		return
 	}
 	// 2、业务处理
-	if err = logic.Post.InsertPost(p, userId); err != nil {
+	if err = service.Post.InsertPost(p, userId); err != nil {
 		zap.L().Warn("[controller postController InsertPost] insert post failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
 		return
@@ -78,9 +78,9 @@ func (postController) UpdateBySelf(c *gin.Context) {
 		return
 	}
 	// 业务
-	if err = logic.Post.UpdateBySelf(u); err != nil {
+	if err = service.Post.UpdateBySelf(u); err != nil {
 		zap.L().Warn("[controller postController UpdateBySelf] update post by self failed ", zap.Error(err))
-		if errors.Is(err, logic.ErrorPostExist) {
+		if errors.Is(err, service.ErrorPostExist) {
 			ResponseErrorWithMsg(c, ErrorInvalidParams, err.Error())
 			return
 		}
@@ -111,7 +111,7 @@ func (postController) GetPostVOByPostId(c *gin.Context) {
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
-	data, err := logic.Post.GetPostVOByPostId(postId)
+	data, err := service.Post.GetPostVOByPostId(postId)
 	if err != nil {
 		zap.L().Warn("[controller postController GetPostVOByPostId] get post vo by postId failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
@@ -143,7 +143,7 @@ func (postController) GetMyPostVOList(c *gin.Context) {
 		ResponseError(c, ErrorServerBusy)
 		return
 	}
-	data, err := logic.Post.GetMyPostVOList(params, userId)
+	data, err := service.Post.GetMyPostVOList(params, userId)
 	if err != nil {
 		zap.L().Warn("[controller postController GetMyPostVOList] get my post vo list failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
@@ -169,7 +169,7 @@ func (postController) GetPostVOList(c *gin.Context) {
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
-	data, err := logic.Post.GetPostVOList(params)
+	data, err := service.Post.GetPostVOList(params)
 	if err != nil {
 		zap.L().Warn("[controller postController GetPostVOList] get post vo list failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
@@ -204,9 +204,9 @@ func (postController) AddPost(c *gin.Context) {
 		return
 	}
 	// 2、业务处理
-	if err = logic.Post.AddPost(u, userId); err != nil {
+	if err = service.Post.AddPost(u, userId); err != nil {
 		zap.L().Error("[controller post AddPost] add post failed ", zap.Error(err))
-		if errors.Is(err, logic.ErrorPostExist) {
+		if errors.Is(err, service.ErrorPostExist) {
 			ResponseErrorWithMsg(c, ErrorInvalidParams, err.Error())
 			return
 		}
@@ -240,7 +240,7 @@ func (postController) DeletePostByPostId(c *gin.Context) {
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
-	if err = logic.Post.DeletePostByPostId(postId); err != nil {
+	if err = service.Post.DeletePostByPostId(postId); err != nil {
 		zap.L().Warn("[controller postController DeletePostByPostId] delete post by postId failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
 		return
@@ -267,10 +267,10 @@ func (postController) UpdatePostByAdmin(c *gin.Context) {
 		return
 	}
 	// 业务
-	err = logic.Post.UpdatePostByAdmin(u)
+	err = service.Post.UpdatePostByAdmin(u)
 	if err != nil {
 		zap.L().Warn("[controller postController UpdatePostByAdmin] update post by admin failed ", zap.Error(err))
-		if errors.Is(err, logic.ErrorPostExist) {
+		if errors.Is(err, service.ErrorPostExist) {
 			ResponseErrorWithMsg(c, ErrorInvalidParams, err.Error())
 			return
 		}
@@ -301,7 +301,7 @@ func (postController) GetPostByPostId(c *gin.Context) {
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
-	data, err := logic.Post.GetPostByPostId(postId)
+	data, err := service.Post.GetPostByPostId(postId)
 	if err != nil {
 		zap.L().Warn("[controller postController GetPostByPostId] get post by postId failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
@@ -328,7 +328,7 @@ func (postController) GetPostList(c *gin.Context) {
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
-	data, err := logic.Post.GetPostList(params)
+	data, err := service.Post.GetPostList(params)
 	if err != nil {
 		zap.L().Warn("[controller postController GetPostList] get post list failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)

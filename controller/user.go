@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
-	"mio-init/logic"
 	"mio-init/model"
+	"mio-init/service"
 	"mio-init/util"
 	"strconv"
 )
@@ -35,7 +35,7 @@ func (userController) Login(c *gin.Context) {
 		return
 	}
 	// 2、业务处理
-	data, err := logic.User.Login(u)
+	data, err := service.User.Login(u)
 	if err != nil {
 		zap.L().Error("[controller userController Login] login failed ", zap.String("Account", u.Account), zap.Error(err))
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -60,7 +60,7 @@ func (userController) Login(c *gin.Context) {
 // @Router /user/logout [post]
 func (userController) Logout(c *gin.Context) {
 	token := c.GetHeader(util.TokenHeader)
-	err := logic.User.Logout(token)
+	err := service.User.Logout(token)
 	if err != nil {
 		zap.L().Warn("[controller userController Logout] logout failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
@@ -88,9 +88,9 @@ func (userController) Register(c *gin.Context) {
 		return
 	}
 	// 2、业务处理
-	if err := logic.User.Register(u); err != nil {
+	if err := service.User.Register(u); err != nil {
 		zap.L().Warn("[controller userController Register] register failed ", zap.Error(err))
-		if errors.Is(err, logic.ErrorUserExist) {
+		if errors.Is(err, service.ErrorUserExist) {
 			ResponseErrorWithMsg(c, ErrorInvalidParams, err.Error())
 			return
 		}
@@ -118,7 +118,7 @@ func (userController) GetLoginUser(c *gin.Context) {
 		ResponseError(c, ErrorNotLogin)
 		return
 	}
-	data, err := logic.User.GetLoginUser(userId)
+	data, err := service.User.GetLoginUser(userId)
 	if err != nil {
 		zap.L().Warn("[controller userController GetLoginUser] get login user failed ", zap.Error(err))
 		ResponseError(c, ErrorForbidden)
@@ -154,9 +154,9 @@ func (userController) UpdateBySelf(c *gin.Context) {
 		return
 	}
 	// 业务
-	if err = logic.User.UpdateBySelf(u); err != nil {
+	if err = service.User.UpdateBySelf(u); err != nil {
 		zap.L().Warn("[controller userController UpdateBySelf] update by self failed ", zap.Error(err))
-		if errors.Is(err, logic.ErrorUserExist) {
+		if errors.Is(err, service.ErrorUserExist) {
 			ResponseErrorWithMsg(c, ErrorInvalidParams, err.Error())
 			return
 		}
@@ -187,7 +187,7 @@ func (userController) GetUserVOByUserId(c *gin.Context) {
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
-	data, err := logic.User.GetUserVOByUserId(userId)
+	data, err := service.User.GetUserVOByUserId(userId)
 	if err != nil {
 		zap.L().Warn("[controller userController GetUserVOByUserId] get user vo by userId error ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
@@ -214,7 +214,7 @@ func (userController) GetUserVOList(c *gin.Context) {
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
-	data, err := logic.User.GetUserVOList(params)
+	data, err := service.User.GetUserVOList(params)
 	if err != nil {
 		zap.L().Warn("[controller userController GetUserVOList] get user vo list failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
@@ -243,9 +243,9 @@ func (userController) AddUser(c *gin.Context) {
 		return
 	}
 	// 2、业务处理
-	if err := logic.User.AddUser(u); err != nil {
+	if err := service.User.AddUser(u); err != nil {
 		zap.L().Error("[controller userController AddUser] add user failed ", zap.Error(err))
-		if errors.Is(err, logic.ErrorUserExist) {
+		if errors.Is(err, service.ErrorUserExist) {
 			ResponseErrorWithMsg(c, ErrorInvalidParams, err.Error())
 			return
 		}
@@ -279,7 +279,7 @@ func (userController) DeleteUserByUserId(c *gin.Context) {
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
-	if err = logic.User.DeleteUserByUserId(userId); err != nil {
+	if err = service.User.DeleteUserByUserId(userId); err != nil {
 		zap.L().Warn("[controller userController DeleteUserByUserId] delete user by userId failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
 		return
@@ -306,10 +306,10 @@ func (userController) UpdateUserByAdmin(c *gin.Context) {
 		return
 	}
 	// 业务
-	err = logic.User.UpdateUserByAdmin(u)
+	err = service.User.UpdateUserByAdmin(u)
 	if err != nil {
 		zap.L().Warn("[controller userController UpdateUserByAdmin] update user by admin failed ", zap.Error(err))
-		if errors.Is(err, logic.ErrorUserExist) {
+		if errors.Is(err, service.ErrorUserExist) {
 			ResponseErrorWithMsg(c, ErrorInvalidParams, err.Error())
 			return
 		}
@@ -340,7 +340,7 @@ func (userController) GetUserByUserId(c *gin.Context) {
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
-	data, err := logic.User.GetUserByUserId(userId)
+	data, err := service.User.GetUserByUserId(userId)
 	if err != nil {
 		zap.L().Warn("[controller userController GetUserByUserId] get user by userId failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
@@ -367,7 +367,7 @@ func (userController) GetUserList(c *gin.Context) {
 		ResponseError(c, ErrorInvalidParams)
 		return
 	}
-	data, err := logic.User.GetUserList(params)
+	data, err := service.User.GetUserList(params)
 	if err != nil {
 		zap.L().Warn("[controller userController GetUserList] get user list failed ", zap.Error(err))
 		ResponseError(c, ErrorServerBusy)
