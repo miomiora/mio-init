@@ -14,7 +14,7 @@ const (
 	KeyPostId   = "post_id"
 
 	TokenPrefix     = "user_refresh_token"
-	BlackListPrefix = "blackList"
+	BlackListPrefix = "user_blackList"
 
 	TokenHeader = "Authorization"
 	TokenEmpty  = ""

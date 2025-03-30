@@ -19,13 +19,13 @@ func (userRepo) Create(ctx context.Context, user *model.User) error {
 
 func (userRepo) Login(ctx context.Context, account, password string) (*model.User, error) {
 	var user model.User
-	err := core.MySQL.GetDB().WithContext(ctx).Where("account = ? and password = ?", account, password).First(&model.User{}).Error
+	err := core.MySQL.GetDB().WithContext(ctx).Where("account = ? and password = ?", account, password).First(&user).Error
 	return &user, err
 }
 
 func (userRepo) GetByUserId(ctx context.Context, userId int64) (*model.User, error) {
 	var user model.User
-	err := core.MySQL.GetDB().WithContext(ctx).Where("user_id = ?", userId).First(&model.User{}).Error
+	err := core.MySQL.GetDB().WithContext(ctx).Where("user_id = ?", userId).First(&user).Error
 	return &user, err
 }
 

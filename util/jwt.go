@@ -1,8 +1,8 @@
 package util
 
 import (
-	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	"strconv"
 	"time"
 )
 
@@ -15,7 +15,7 @@ var (
 func GenTokens(userId int64) (accessToken, refreshToken string, err error) {
 	// Access Token
 	accessClaims := jwt.MapClaims{
-		KeyUserId: userId,
+		KeyUserId: strconv.FormatInt(userId, 10),
 		KeyExp:    time.Now().Add(AccessTokenExpire).Unix(),
 		KeyType:   KeyAccess,
 	}
@@ -45,10 +45,15 @@ func ParseToken(tokenString string) (jwt.MapClaims, error) {
 	return token.Claims.(jwt.MapClaims), nil
 }
 
-func GenRefreshKey(userId int64) string {
-	return TokenPrefix + fmt.Sprintf(":%d", userId)
+func GenRefreshKey(refreshToken string) string {
+	return TokenPrefix + ":" + refreshToken
 }
 
 func GenBlackListKey(accessToken string) string {
 	return BlackListPrefix + ":" + accessToken
+}
+
+func GetRemainingTTL(accessToken string) time.Duration {
+	claims, _ := ParseToken(accessToken)
+	return time.Until(time.Unix(int64(claims[KeyExp].(float64)), 0))
 }

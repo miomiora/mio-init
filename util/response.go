@@ -1,4 +1,4 @@
-package ctrls
+package util
 
 import (
 	"github.com/gin-gonic/gin"
@@ -33,6 +33,14 @@ func ResponseOK(c *gin.Context, data interface{}) {
 	c.JSON(http.StatusOK, &Response{
 		Message: "ok",
 		Code:    0,
+		Data:    data,
+	})
+}
+
+func ResponseOKRetry(c *gin.Context, data interface{}) {
+	c.JSON(http.StatusOK, &Response{
+		Message: "ok",
+		Code:    20001,
 		Data:    data,
 	})
 }

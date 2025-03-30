@@ -5,6 +5,7 @@ import (
 	"mio-init/internal/model"
 	"mio-init/internal/repository"
 	"mio-init/util"
+	"strconv"
 )
 
 type userService struct {
@@ -23,7 +24,8 @@ func (userService) Login(ctx context.Context, req *model.UserLoginReq) (*model.U
 		return nil, err
 	}
 
-	_, err = repository.Cache.Set(ctx, util.GenRefreshKey(user.UserId), refreshToken, util.RefreshTokenExpire)
+	_, err = repository.Cache.Set(ctx, util.GenRefreshKey(refreshToken),
+		strconv.FormatInt(user.UserId, 10), util.RefreshTokenExpire)
 	if err != nil {
 		return nil, err
 	}
@@ -46,17 +48,18 @@ func (userService) Create(ctx context.Context, req *model.UserCreateReq) error {
 	})
 }
 
-func (userService) Logout(ctx context.Context, userId int64, accessToken string) error {
-	_, err := repository.Cache.Del(ctx, util.GenRefreshKey(userId))
-	if err != nil {
-		return err
-	}
+func (userService) Logout(ctx context.Context, refreshToken, accessToken string) error {
+	return repository.Cache.Logout(ctx, refreshToken, accessToken)
+}
 
-	// 拉黑 accessToken
-	_, err = repository.Cache.Set(ctx, util.GenBlackListKey(accessToken), "1", util.AccessTokenExpire)
+func (userService) GetByUserId(ctx context.Context, userId int64) (*model.UserInfoRes, error) {
+	user, err := repository.User.GetByUserId(ctx, userId)
 	if err != nil {
-		return err
+		return nil, err
 	}
-
-	return nil
+	return &model.UserInfoRes{
+		UserId:  user.UserId,
+		Name:    user.Name,
+		Account: user.Account,
+	}, nil
 }

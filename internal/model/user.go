@@ -12,9 +12,10 @@ type User struct {
 }
 
 type UserCreateReq struct {
-	Account  string `json:"account" binding:"required"`
-	Name     string `json:"name" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Account    string `json:"account" binding:"required"`
+	Name       string `json:"name" binding:"required"`
+	Password   string `json:"password" binding:"required"`
+	RePassword string `json:"rePassword" binding:"required,eqfield=Password"`
 }
 
 type UserLoginReq struct {
@@ -28,4 +29,10 @@ type UserLoginRes struct {
 	UserId       int64  `json:"userId"`
 	Name         string `json:"name"`
 	Account      string `json:"account"`
+}
+
+type UserInfoRes struct {
+	UserId  int64  `json:"userId"`
+	Name    string `json:"name"`
+	Account string `json:"account"`
 }

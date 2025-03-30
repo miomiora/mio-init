@@ -40,17 +40,17 @@ func main() {
 	}
 	defer zap.L().Sync()
 	// 3、初始化MySQL
-	if err := core.Init(config.Conf.MySQLConfig); err != nil {
+	if err := core.MySQL.Init(config.Conf.MySQLConfig); err != nil {
 		fmt.Printf("init mysql error : %s \n", err)
 		return
 	}
-	defer core.Close()
+	defer core.MySQL.Close()
 	// 4、初始化Redis
-	if err := core.Init(config.Conf.RedisConfig); err != nil {
+	if err := core.Redis.Init(config.Conf.RedisConfig); err != nil {
 		fmt.Printf("init redis error  %s \n", err)
 		return
 	}
-	defer core.Close()
+	defer core.Redis.Close()
 	if err := util.Init(config.Conf.StartTime, config.Conf.MachineID); err != nil {
 		fmt.Printf("init snowflake error  %s \n", err)
 		return

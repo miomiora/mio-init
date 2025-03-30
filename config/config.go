@@ -49,10 +49,10 @@ type RedisConfig struct {
 }
 
 func Init() (err error) {
-	viper.SetConfigFile("config.yml")
+	viper.SetConfigFile("env-local.yml")
 	//viper.SetConfigName("config")
 	//viper.SetConfigType("yml")
-	viper.AddConfigPath("./config")
+	viper.AddConfigPath("./")
 	err = viper.ReadInConfig()
 	if err != nil {
 		return

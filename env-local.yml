@@ -13,10 +13,10 @@ log:
 
 mysql:
   host: 127.0.0.1
-  port: 92
-  user: gin
-  password: 123321
-  dbname: gin_demo
+  port: 33006
+  user: mio
+  password: 123123
+  dbname: mio-init
   max_open_conn: 200
   max_idle_conn: 50
 

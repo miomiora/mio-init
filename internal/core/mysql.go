@@ -6,7 +6,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"mio-init/config"
-	"mio-init/model"
+	"mio-init/internal/model"
 )
 
 var db *gorm.DB
