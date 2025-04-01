@@ -22,7 +22,7 @@ var User = new(userCtrl)
 // @Produce json
 // @Param object body model.UserLoginReq true "登录参数"
 // @Security ApiKeyAuth
-// @Success 200 {object} Response
+// @Success 200 {object} util.Response
 // @Router /user/login [post]
 func (userCtrl) Login(c *gin.Context) {
 	// 1、校验参数
@@ -57,7 +57,7 @@ func (userCtrl) Login(c *gin.Context) {
 // @Produce json
 // @Param object body model.UserCreateReq true "注册参数"
 // @Security ApiKeyAuth
-// @Success 200 {object} Response
+// @Success 200 {object} util.Response
 // @Router /user/register [post]
 func (userCtrl) Create(c *gin.Context) {
 	// 1、参数校验
@@ -85,7 +85,7 @@ func (userCtrl) Create(c *gin.Context) {
 // @Produce json
 // @Param Authorization header string true "用户令牌 Token 登录后产生"
 // @Security ApiKeyAuth
-// @Success 200 {object} Response
+// @Success 200 {object} util.Response
 // @Router /user/logout [post]
 func (userCtrl) Logout(c *gin.Context) {
 	accessToken := c.GetHeader(util.TokenHeader)
@@ -112,7 +112,7 @@ func (userCtrl) Logout(c *gin.Context) {
 // @Produce json
 // @Param Authorization header string true "用户令牌 Token 登录后产生"
 // @Security ApiKeyAuth
-// @Success 200 {object} Response
+// @Success 200 {object} util.Response
 // @Router /user/get/my [get]
 func (userCtrl) GetBySelf(c *gin.Context) {
 	user, err := service.User.GetByUserId(c.Request.Context(), util.GetUserIdByContext(c))
@@ -132,7 +132,7 @@ func (userCtrl) GetBySelf(c *gin.Context) {
 // @Param Authorization header string true "用户令牌 Token 登录后产生"
 // @Param object body model.UserUpdateReq true "更新参数"
 // @Security ApiKeyAuth
-// @Success 200 {object} Response
+// @Success 200 {object} util.Response
 // @Router /user/update [post]
 func (userCtrl) Update(c *gin.Context) {
 	// 1、参数校验
@@ -161,7 +161,7 @@ func (userCtrl) Update(c *gin.Context) {
 // @Param Authorization header string true "用户令牌 Token 登录后产生"
 // @Param object body model.UserUpdatePwdReq true "更新参数"
 // @Security ApiKeyAuth
-// @Success 200 {object} Response
+// @Success 200 {object} util.Response
 // @Router /user/update/pwd [post]
 func (userCtrl) UpdatePassword(c *gin.Context) {
 	accessToken := c.GetHeader(util.TokenHeader)
@@ -198,7 +198,7 @@ func (userCtrl) UpdatePassword(c *gin.Context) {
 // @Produce json
 // @Param Authorization header string true "用户令牌 Token 登录后产生"
 // @Security ApiKeyAuth
-// @Success 200 {object} Response
+// @Success 200 {object} util.Response
 // @Router /user [get]
 func (userCtrl) GetByUserId(c *gin.Context) {
 	userId, err := util.GetUserIdByParam(c)
@@ -224,7 +224,7 @@ func (userCtrl) GetByUserId(c *gin.Context) {
 // @Produce json
 // @Param Authorization header string true "用户令牌 Token 登录后产生"
 // @Security ApiKeyAuth
-// @Success 200 {object} Response
+// @Success 200 {object} util.Response
 // @Router /delete [get]
 func (userCtrl) Delete(c *gin.Context) {
 	userId, err := util.GetUserIdByParam(c)
@@ -250,7 +250,7 @@ func (userCtrl) Delete(c *gin.Context) {
 // @Produce json
 // @Param Authorization header string true "用户令牌 Token 登录后产生"
 // @Security ApiKeyAuth
-// @Success 200 {object} Response
+// @Success 200 {object} util.Response
 // @Router /list [get]
 func (userCtrl) List(c *gin.Context) {
 	page, err := util.GetIntByQuery(c, util.KeyPage)

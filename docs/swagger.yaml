@@ -1,155 +1,66 @@
 basePath: /api/v1
 definitions:
-  controller.Response:
+  model.UserCreateReq:
+    properties:
+      account:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      rePassword:
+        type: string
+    required:
+    - account
+    - name
+    - password
+    - rePassword
+    type: object
+  model.UserLoginReq:
+    properties:
+      account:
+        type: string
+      password:
+        type: string
+    required:
+    - account
+    - password
+    type: object
+  model.UserUpdatePwdReq:
+    properties:
+      account:
+        type: string
+      newPassword:
+        type: string
+      password:
+        type: string
+      rePassword:
+        type: string
+      userId:
+        type: integer
+    required:
+    - account
+    - newPassword
+    - password
+    - rePassword
+    type: object
+  model.UserUpdateReq:
+    properties:
+      name:
+        type: string
+      userId:
+        type: integer
+    required:
+    - name
+    - userId
+    type: object
+  util.Response:
     properties:
       code:
         type: integer
       data: {}
       message:
         type: string
-    type: object
-  model.ListParams:
-    properties:
-      page:
-        type: integer
-      size:
-        type: integer
-    type: object
-  model.PostDTOAdd:
-    properties:
-      content:
-        type: string
-      title:
-        type: string
-    required:
-    - content
-    - title
-    type: object
-  model.PostDTOInsert:
-    properties:
-      content:
-        type: string
-      title:
-        type: string
-    required:
-    - content
-    - title
-    type: object
-  model.PostDTOUpdateByAdmin:
-    properties:
-      content:
-        type: string
-      postId:
-        example: "0"
-        type: string
-      title:
-        type: string
-    required:
-    - content
-    - postId
-    - title
-    type: object
-  model.PostDTOUpdateBySelf:
-    properties:
-      content:
-        type: string
-      postId:
-        example: "0"
-        type: string
-      title:
-        type: string
-      userId:
-        example: "0"
-        type: string
-    required:
-    - content
-    - postId
-    - title
-    - userId
-    type: object
-  model.UserDTOAdd:
-    properties:
-      account:
-        type: string
-      password:
-        type: string
-      rePassword:
-        type: string
-    required:
-    - account
-    - password
-    - rePassword
-    type: object
-  model.UserDTOLogin:
-    properties:
-      account:
-        type: string
-      password:
-        type: string
-    required:
-    - account
-    - password
-    type: object
-  model.UserDTORegister:
-    properties:
-      account:
-        type: string
-      password:
-        type: string
-      rePassword:
-        type: string
-    required:
-    - account
-    - password
-    - rePassword
-    type: object
-  model.UserDTOUpdateByAdmin:
-    properties:
-      account:
-        type: string
-      description:
-        type: string
-      email:
-        type: string
-      gender:
-        type: boolean
-      password:
-        type: string
-      phone:
-        type: string
-      rePassword:
-        type: string
-      userId:
-        example: "0"
-        type: string
-      userRole:
-        type: integer
-    required:
-    - account
-    - userId
-    type: object
-  model.UserDTOUpdateBySelf:
-    properties:
-      account:
-        type: string
-      description:
-        type: string
-      email:
-        type: string
-      gender:
-        type: boolean
-      password:
-        type: string
-      phone:
-        type: string
-      rePassword:
-        type: string
-      userId:
-        example: "0"
-        type: string
-    required:
-    - account
-    - userId
     type: object
 host: 127.0.0.1:8081
 info:
@@ -160,366 +71,7 @@ info:
   title: mio-init
   version: "1.0"
 paths:
-  /post/add:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 用户令牌 Token 登录后产生，需为管理员
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 新增的文章参数
-        in: body
-        name: object
-        required: true
-        schema:
-          $ref: '#/definitions/model.PostDTOAdd'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: 通过获取文章视图列表
-      tags:
-      - 文章相关接口
-  /post/delete:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 用户令牌 Token 登录后产生，需为管理员
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 需要删除的postId
-        in: query
-        name: postId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: 通过postId删除文章
-      tags:
-      - 文章相关接口
-  /post/get:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: 用户令牌 Token 登录后产生，需为管理员
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 需要查询的postId
-        in: query
-        name: postId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: 管理员通过postId获取文章全部数据
-      tags:
-      - 文章相关接口
-  /post/get/vo:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: 用户令牌 Token 登录后产生
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 需要查找的文章id
-        in: query
-        name: postId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: 通过postId获取文章视图
-      tags:
-      - 文章相关接口
-  /post/list/page:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 用户令牌 Token 登录后产生，需为管理员
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 分页查询所需要的参数
-        in: body
-        name: object
-        required: true
-        schema:
-          $ref: '#/definitions/model.ListParams'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: 管理员获取全部文章详细信息
-      tags:
-      - 文章相关接口
-  /post/list/page/vo:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 用户令牌 Token 登录后产生
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 分页查询需要的参数
-        in: body
-        name: object
-        required: true
-        schema:
-          $ref: '#/definitions/model.ListParams'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: 通过获取文章视图列表
-      tags:
-      - 文章相关接口
-  /post/my:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 用户令牌 Token 登录后产生
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 分页查询需要的参数
-        in: body
-        name: object
-        required: true
-        schema:
-          $ref: '#/definitions/model.ListParams'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: 通过当前登录的用户所写的文章
-      tags:
-      - 文章相关接口
-  /post/new:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 用户令牌 Token 登录后产生
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 新建文章参数
-        in: body
-        name: object
-        required: true
-        schema:
-          $ref: '#/definitions/model.PostDTOInsert'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: 新建文章
-      tags:
-      - 文章相关接口
-  /post/update:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 用户令牌 Token 登录后产生，需为管理员
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 需要更新的文章信息
-        in: body
-        name: object
-        required: true
-        schema:
-          $ref: '#/definitions/model.PostDTOUpdateByAdmin'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: 管理员编辑文章
-      tags:
-      - 文章相关接口
-  /post/update/my:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 用户令牌 Token 登录后产生
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 修改后的数据
-        in: body
-        name: object
-        required: true
-        schema:
-          $ref: '#/definitions/model.PostDTOUpdateBySelf'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: 用户更新自己写的文章
-      tags:
-      - 文章相关接口
-  /user/add:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 用户令牌 Token 登录后产生，需为管理员
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 新用户的数据
-        in: body
-        name: object
-        required: true
-        schema:
-          $ref: '#/definitions/model.UserDTOAdd'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: 管理员添加用户
-      tags:
-      - 用户相关接口
-  /user/delete:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 用户令牌 Token 登录后产生，需为管理员
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 需要删除的userId
-        in: query
-        name: userId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: 管理员根据userId删除用户
-      tags:
-      - 用户相关接口
-  /user/get:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: 用户令牌 Token 登录后产生，需为管理员
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 需要查询的userId
-        in: query
-        name: userId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: 管理员根据userId查询用户完整信息
-      tags:
-      - 用户相关接口
-  /user/get/login:
+  /delete:
     get:
       consumes:
       - application/json
@@ -535,13 +87,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controller.Response'
+            $ref: '#/definitions/util.Response'
       security:
       - ApiKeyAuth: []
-      summary: 获取当前登录用户
+      summary: 删除用户
       tags:
       - 用户相关接口
-  /user/get/vo:
+  /list:
     get:
       consumes:
       - application/json
@@ -551,53 +103,20 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 需要查找的用户id
-        in: query
-        name: userId
-        required: true
-        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controller.Response'
+            $ref: '#/definitions/util.Response'
       security:
       - ApiKeyAuth: []
-      summary: 根据userId查找用户视图
+      summary: 用户列表
       tags:
       - 用户相关接口
-  /user/list/page:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 用户令牌 Token 登录后产生，需为管理员
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 分页查询所需要的参数
-        in: body
-        name: object
-        required: true
-        schema:
-          $ref: '#/definitions/model.ListParams'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: 管理员根据查询用户完整信息列表
-      tags:
-      - 用户相关接口
-  /user/list/page/vo:
-    post:
+  /user:
+    get:
       consumes:
       - application/json
       parameters:
@@ -606,22 +125,38 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 分页查询需要的参数
-        in: body
-        name: object
-        required: true
-        schema:
-          $ref: '#/definitions/model.ListParams'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controller.Response'
+            $ref: '#/definitions/util.Response'
       security:
       - ApiKeyAuth: []
-      summary: 获取用户视图列表
+      summary: 获取用户信息
+      tags:
+      - 用户相关接口
+  /user/get/my:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户令牌 Token 登录后产生
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 用户信息
       tags:
       - 用户相关接口
   /user/login:
@@ -634,14 +169,14 @@ paths:
         name: object
         required: true
         schema:
-          $ref: '#/definitions/model.UserDTOLogin'
+          $ref: '#/definitions/model.UserLoginReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controller.Response'
+            $ref: '#/definitions/util.Response'
       security:
       - ApiKeyAuth: []
       summary: 用户登录
@@ -663,7 +198,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controller.Response'
+            $ref: '#/definitions/util.Response'
       security:
       - ApiKeyAuth: []
       summary: 用户登出
@@ -679,14 +214,14 @@ paths:
         name: object
         required: true
         schema:
-          $ref: '#/definitions/model.UserDTORegister'
+          $ref: '#/definitions/model.UserCreateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controller.Response'
+            $ref: '#/definitions/util.Response'
       security:
       - ApiKeyAuth: []
       summary: 用户注册
@@ -697,30 +232,30 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: 用户令牌 Token 登录后产生，需为管理员
+      - description: 用户令牌 Token 登录后产生
         in: header
         name: Authorization
         required: true
         type: string
-      - description: 需要更新的用户信息
+      - description: 更新参数
         in: body
         name: object
         required: true
         schema:
-          $ref: '#/definitions/model.UserDTOUpdateByAdmin'
+          $ref: '#/definitions/model.UserUpdateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controller.Response'
+            $ref: '#/definitions/util.Response'
       security:
       - ApiKeyAuth: []
-      summary: 管理员根据userId更新用户信息
+      summary: 修改用户信息
       tags:
       - 用户相关接口
-  /user/update/my:
+  /user/update/pwd:
     post:
       consumes:
       - application/json
@@ -730,22 +265,22 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 修改后的数据
+      - description: 更新参数
         in: body
         name: object
         required: true
         schema:
-          $ref: '#/definitions/model.UserDTOUpdateBySelf'
+          $ref: '#/definitions/model.UserUpdatePwdReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controller.Response'
+            $ref: '#/definitions/util.Response'
       security:
       - ApiKeyAuth: []
-      summary: 当前用户更新自己的信息
+      summary: 修改密码
       tags:
       - 用户相关接口
 swagger: "2.0"
