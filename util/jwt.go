@@ -26,7 +26,7 @@ func GenTokens(userId int64) (accessToken, refreshToken string, err error) {
 
 	// Refresh Token
 	refreshClaims := jwt.MapClaims{
-		KeyUserId: userId,
+		KeyUserId: strconv.FormatInt(userId, 10),
 		KeyExp:    time.Now().Add(AccessTokenExpire).Unix(),
 		KeyType:   KeyRefresh,
 	}

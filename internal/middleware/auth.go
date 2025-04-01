@@ -12,6 +12,7 @@ func AuthToken(c *gin.Context) {
 
 	if accessToken == "" {
 		util.ResponseError(c, util.ErrorNotLogin)
+		c.Abort()
 		return
 	}
 
@@ -21,11 +22,13 @@ func AuthToken(c *gin.Context) {
 		newAccess, ok := tryRefreshToken(c)
 		if !ok {
 			util.ResponseError(c, util.ErrorNotLogin)
+			c.Abort()
 			return
 		}
 
 		// 3. 返回新 Token 给前端（提示重试）
 		util.ResponseOKRetry(c, newAccess)
+		c.Abort()
 		return
 	}
 
@@ -33,6 +36,7 @@ func AuthToken(c *gin.Context) {
 	if isSensitivePath(c.Request.URL.Path) {
 		if exists, _ := repository.Cache.Exists(c.Request.Context(), util.GenBlackListKey(accessToken)); exists == 1 {
 			util.ResponseError(c, util.ErrorNotLogin)
+			c.Abort()
 			return
 		}
 	}

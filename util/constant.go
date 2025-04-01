@@ -12,6 +12,9 @@ const (
 	KeyAccess   = "access"
 	KeyRefresh  = "refresh"
 	KeyPostId   = "post_id"
+	KeyPageSize = "page_size"
+	KeyPage     = "page"
+	KeyOrderBy  = "order_by"
 
 	TokenPrefix     = "user_refresh_token"
 	BlackListPrefix = "user_blackList"

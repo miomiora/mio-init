@@ -4,11 +4,10 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-
-	UserId   int64  `json:"userId" gorm:"not null"`
-	Name     string `json:"name" gorm:"not null"`
-	Account  string `json:"account" gorm:"not null;unique"`
-	Password string `json:"password" gorm:"not null"`
+	UserId   int64  `json:"userId" gorm:"not null;index"`
+	Name     string `json:"name" gorm:"not null;size:100"`
+	Account  string `json:"account" gorm:"not null;uniqueIndex;size:50"`
+	Password string `json:"password" gorm:"not null;size:128"`
 }
 
 type UserCreateReq struct {
@@ -21,6 +20,19 @@ type UserCreateReq struct {
 type UserLoginReq struct {
 	Account  string `json:"account" binding:"required"`
 	Password string `json:"password" binding:"required"`
+}
+
+type UserUpdateReq struct {
+	UserId int64  `json:"userId" binding:"required"`
+	Name   string `json:"name" binding:"required"`
+}
+
+type UserUpdatePwdReq struct {
+	Account     string `json:"account" binding:"required"`
+	Password    string `json:"password" binding:"required"`
+	UserId      int64  `json:"userId"`
+	NewPassword string `json:"newPassword" binding:"required"`
+	RePassword  string `json:"rePassword" binding:"required,eqfield=NewPassword"`
 }
 
 type UserLoginRes struct {

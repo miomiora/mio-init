@@ -1,6 +1,6 @@
 name: mio-init
 mode: dev
-port: 8081
+port: 8080
 version: v1.0.0
 start_time: "2023-05-01"
 

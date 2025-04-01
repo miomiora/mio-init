@@ -32,7 +32,7 @@ func (mysqlCore) Init(cfg *config.MySQLConfig) (err error) {
 		return
 	}
 
-	err = db.AutoMigrate(&model.User{}, &model.Post{})
+	err = db.AutoMigrate(&model.User{})
 	if err != nil {
 		zap.L().Info("[dao mysql Init] create table failed ", zap.Error(err))
 		return err
